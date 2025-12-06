@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import Label from "../components/Label";
 import { configStore } from "../config";
 import { RouterContext } from "../router";
 
@@ -13,14 +14,15 @@ export default function AccountEditorView() {
   };
 
   return (
-    <div>
-      <div>
-        <Button onClick={onBack}>Back</Button>
+    <div className="space-y-3">
+      <div className="text-lg font-medium pl-3">
+        Create a new Minecraft Account
       </div>
-      <div>
-        <Input value={name} placeholder="Account Name" onChange={setName} />
+      <div className="flex flex-col space-y-1">
+        <Label>Username</Label>
+        <Input value={name} placeholder="Username" onChange={setName} />
       </div>
-      <div className="flex">
+      <div className="flex space-x-1 pl-3">
         <Button onClick={onBack}>Cancel</Button>
         <Button
           onClick={() => {

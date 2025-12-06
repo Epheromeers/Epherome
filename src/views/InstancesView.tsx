@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
+import Label from "../components/Label";
 import { configStore } from "../config";
 import { RouterContext } from "../router";
 
@@ -15,20 +16,30 @@ export default function InstancesView() {
         <Input placeholder="Search" />
         <Button onClick={() => router.setView("instanceEditor")}>Create</Button>
       </div>
-      <div>
+      <div className="p-3 grid grid-cols-2 gap-3">
         {instances.map((value) => (
-          <Card key={value.name} className="flex">
-            <div>{value.name}</div>
-            <Button
-              onClick={() => {
-                configStore.instances = configStore.instances.filter(
-                  (instance) => instance.name !== value.name,
-                );
-                setInstances(configStore.instances);
-              }}
-            >
-              Delete
-            </Button>
+          <Card key={value.name}>
+            <div className="text-sm font-medium">{value.name}</div>
+            <div>
+              <Label>Directory</Label>
+              <div className="text-sm pl-3">{value.directory}</div>
+            </div>
+            <div>
+              <Label>Version</Label>
+              <div className="text-sm pl-3">{value.version}</div>
+            </div>
+            <div className="flex justify-end">
+              <Button
+                onClick={() => {
+                  configStore.instances = configStore.instances.filter(
+                    (instance) => instance.name !== value.name,
+                  );
+                  setInstances(configStore.instances);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
           </Card>
         ))}
       </div>

@@ -30,7 +30,7 @@ export default function App() {
             label && (
               <button
                 key={key}
-                className={`block text-sm px-2 py-1 rounded-lg w-full text-left ${view === key ? "bg-gray-200" : "hover:bg-gray-100 active:bg-gray-200"}`}
+                className={`block text-sm px-3 py-1 rounded-full w-full text-left ${view === key ? "bg-gray-200" : "hover:bg-gray-100 active:bg-gray-200"}`}
                 type="button"
                 onClick={() => setView(key)}
               >
