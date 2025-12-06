@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import Helper from "../components/Helper";
 import Input from "../components/Input";
 import Label from "../components/Label";
-import { configStore } from "../config";
+import { configStore, saveConfig } from "../config";
 import { RouterContext } from "../router";
 
 export default function InstanceEditorView() {
@@ -46,12 +46,13 @@ export default function InstanceEditorView() {
         <Button
           onClick={() => {
             if (name) {
-              onBack();
-              configStore.instances.push({
+              configStore.data.instances.push({
                 name,
                 directory,
                 version,
               });
+              saveConfig();
+              onBack();
             }
           }}
         >

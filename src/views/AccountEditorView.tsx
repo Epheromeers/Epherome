@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Label from "../components/Label";
-import { configStore } from "../config";
+import { configStore, saveConfig } from "../config";
 import { RouterContext } from "../router";
 
 export default function AccountEditorView() {
@@ -27,11 +27,12 @@ export default function AccountEditorView() {
         <Button
           onClick={() => {
             if (name) {
-              onBack();
-              configStore.accounts.push({
+              configStore.data.accounts.push({
                 username: name,
                 category: "offline",
               });
+              saveConfig();
+              onBack();
             }
           }}
         >

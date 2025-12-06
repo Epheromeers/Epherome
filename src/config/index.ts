@@ -1,3 +1,5 @@
+import { BaseDirectory, writeTextFile } from "@tauri-apps/plugin-fs";
+
 export interface MinecraftInstance {
   name: string;
   directory: string;
@@ -14,7 +16,15 @@ export interface MinecraftAccount {
 }
 
 export const configStore = {
-  accounts: [] as MinecraftAccount[],
-  instances: [] as MinecraftInstance[],
-  javaPath: String(),
+  data: {
+    accounts: [] as MinecraftAccount[],
+    instances: [] as MinecraftInstance[],
+    javaPath: String(),
+  },
 };
+
+export async function saveConfig() {
+  await writeTextFile("epherome.json", JSON.stringify(configStore.data), {
+    baseDir: BaseDirectory.AppData,
+  });
+}

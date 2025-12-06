@@ -3,11 +3,11 @@ import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
 import Label from "../components/Label";
-import { configStore } from "../config";
+import { configStore, saveConfig } from "../config";
 import { RouterContext } from "../router";
 
 export default function InstancesView() {
-  const [instances, setInstances] = useState(configStore.instances);
+  const [instances, setInstances] = useState(configStore.data.instances);
   const router = useContext(RouterContext);
 
   return (
@@ -31,10 +31,12 @@ export default function InstancesView() {
             <div className="flex justify-end">
               <Button
                 onClick={() => {
-                  configStore.instances = configStore.instances.filter(
-                    (instance) => instance.name !== value.name,
-                  );
-                  setInstances(configStore.instances);
+                  configStore.data.instances =
+                    configStore.data.instances.filter(
+                      (instance) => instance.name !== value.name,
+                    );
+                  saveConfig();
+                  setInstances(configStore.data.instances);
                 }}
               >
                 Delete

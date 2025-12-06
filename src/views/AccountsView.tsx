@@ -2,11 +2,11 @@ import { useContext, useState } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
-import { configStore } from "../config";
+import { configStore, saveConfig } from "../config";
 import { RouterContext } from "../router";
 
 export default function AccountsView() {
-  const [accounts, setAccounts] = useState(configStore.accounts);
+  const [accounts, setAccounts] = useState(configStore.data.accounts);
   const router = useContext(RouterContext);
 
   return (
@@ -22,10 +22,11 @@ export default function AccountsView() {
             <div className="flex justify-end">
               <Button
                 onClick={() => {
-                  configStore.accounts = configStore.accounts.filter(
+                  configStore.data.accounts = configStore.data.accounts.filter(
                     (account) => account.username !== value.username,
                   );
-                  setAccounts(configStore.accounts);
+                  saveConfig();
+                  setAccounts(configStore.data.accounts);
                 }}
               >
                 Delete
