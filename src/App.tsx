@@ -3,6 +3,7 @@ import { RouterContext } from "./router";
 import AccountEditorView from "./views/AccountEditorView";
 import AccountsView from "./views/AccountsView";
 import DashboardView from "./views/DashboardView";
+import InstanceEditorView from "./views/InstanceEditorView";
 import InstancesView from "./views/InstancesView";
 import SettingsView from "./views/SettingsView";
 
@@ -16,6 +17,7 @@ export default function App() {
         ["instances", InstancesView, "Instances"],
         ["settings", SettingsView, "Settings"],
         ["accountEditor", AccountEditorView],
+        ["instanceEditor", InstanceEditorView],
       ] as [string, React.ComponentType, string?][],
     [],
   );

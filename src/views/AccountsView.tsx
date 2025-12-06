@@ -17,12 +17,12 @@ export default function AccountsView() {
       </div>
       <div>
         {accounts.map((value) => (
-          <Card key={value} className="flex">
-            <div>{value}</div>
+          <Card key={value.username} className="flex">
+            <div>{value.username}</div>
             <Button
               onClick={() => {
                 configStore.accounts = configStore.accounts.filter(
-                  (account) => account !== value,
+                  (account) => account.username !== value.username,
                 );
                 setAccounts(configStore.accounts);
               }}
