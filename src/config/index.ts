@@ -6,7 +6,7 @@ export interface MinecraftInstance {
   version: string;
 }
 
-export type MinecraftAccountCategory = "microsoft" | "offline";
+export type MinecraftAccountCategory = "microsoft" | "custom" | "offline";
 
 export interface MinecraftAccount {
   username: string;

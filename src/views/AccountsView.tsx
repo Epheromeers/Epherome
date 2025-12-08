@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
+import Label from "../components/Label";
 import { configStore, saveConfig } from "../config";
 import { RouterContext } from "../router";
 
@@ -19,6 +20,10 @@ export default function AccountsView() {
         {accounts.map((value) => (
           <Card key={value.username}>
             <div className="text-sm font-medium">{value.username}</div>
+            <div className="flex space-x-1">
+              <Label>Category</Label>
+              <div className="text-sm">{value.category}</div>
+            </div>
             <div className="flex justify-end">
               <Button
                 onClick={() => {
