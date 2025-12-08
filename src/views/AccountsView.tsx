@@ -24,7 +24,20 @@ export default function AccountsView() {
               <Label>Category</Label>
               <div className="text-sm">{value.category}</div>
             </div>
-            <div className="flex justify-end">
+            <div className="flex space-x-1 justify-end">
+              <Button
+                onClick={() => {
+                  const former = value.checked;
+                  configStore.data.accounts.forEach((acc) => {
+                    acc.checked = false;
+                  });
+                  if (!former) value.checked = true;
+                  saveConfig();
+                  setAccounts(Array.from(configStore.data.accounts));
+                }}
+              >
+                {value.checked ? "Deselect" : "Select"}
+              </Button>
               <Button
                 onClick={() => {
                   configStore.data.accounts = configStore.data.accounts.filter(

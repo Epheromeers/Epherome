@@ -4,6 +4,7 @@ export interface MinecraftInstance {
   name: string;
   directory: string;
   version: string;
+  checked?: boolean;
 }
 
 export type MinecraftAccountCategory = "microsoft" | "custom" | "offline";
@@ -13,6 +14,7 @@ export interface MinecraftAccount {
   category: MinecraftAccountCategory;
   uuid?: string;
   accessToken?: string;
+  checked?: boolean;
 }
 
 export const configStore = {

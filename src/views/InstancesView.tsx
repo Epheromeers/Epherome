@@ -28,7 +28,20 @@ export default function InstancesView() {
               <Label>Version</Label>
               <div className="text-sm pl-3">{value.version}</div>
             </div>
-            <div className="flex justify-end">
+            <div className="flex space-x-1 justify-end">
+              <Button
+                onClick={() => {
+                  const former = value.checked;
+                  configStore.data.instances.forEach((instance) => {
+                    instance.checked = false;
+                  });
+                  if (!former) value.checked = true;
+                  saveConfig();
+                  setInstances(Array.from(configStore.data.instances));
+                }}
+              >
+                {value.checked ? "Deselect" : "Select"}
+              </Button>
               <Button
                 onClick={() => {
                   configStore.data.instances =
