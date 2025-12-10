@@ -1,10 +1,17 @@
 import { app, path } from "@tauri-apps/api";
+import { arch, platform, version } from "@tauri-apps/plugin-os";
 import { useEffect, useState } from "react";
 import Button from "../components/Button";
 import Helper from "../components/Helper";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import { configStore, saveConfig } from "../config";
+
+async function getMeta() {
+  const appVersion = await app.getVersion();
+  const appDir = await path.appDataDir();
+  return { appVersion, appDir };
+}
 
 export default function SettingsView() {
   const [javaPath, setJavaPath] = useState(configStore.data.javaPath);
@@ -14,11 +21,7 @@ export default function SettingsView() {
   });
 
   useEffect(() => {
-    app.getVersion().then((appVersion) => {
-      path.appDataDir().then((appDir) => {
-        setMeta({ appVersion, appDir });
-      });
-    });
+    getMeta().then(setMeta);
   }, []);
 
   return (
@@ -53,6 +56,12 @@ export default function SettingsView() {
       <div>
         <Label>App Data Directory</Label>
         <div className="text-sm pl-3">{meta.appDir}</div>
+      </div>
+      <div>
+        <Label>OS</Label>
+        <div className="text-sm pl-3">
+          {platform()} {version()} {arch()}
+        </div>
       </div>
       <div>
         <Label>GitHub Repository</Label>

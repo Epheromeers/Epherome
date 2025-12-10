@@ -21,7 +21,7 @@ export const configStore = {
   data: {
     accounts: [] as MinecraftAccount[],
     instances: [] as MinecraftInstance[],
-    javaPath: String(),
+    javaPath: "java",
   },
 };
 
