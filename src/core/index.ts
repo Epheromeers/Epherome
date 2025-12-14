@@ -1,22 +1,37 @@
 import { path } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
-import { dirname } from "@tauri-apps/api/path";
-import { exists, mkdir, readTextFile } from "@tauri-apps/plugin-fs";
+import { readTextFile } from "@tauri-apps/plugin-fs";
 import { Command } from "@tauri-apps/plugin-shell";
 import type { MinecraftAccount, MinecraftInstance } from "../config";
 import {
   type ClientJsonArguments,
   parseClientJsonArguments,
 } from "./arguments";
-import type { AssetIndex } from "./assets";
+import { checkAssets } from "./assets";
 import { downloadFile } from "./download";
-import type { ClientJsonLibrary } from "./libraries";
-import { isAllCompliant } from "./rules";
+import { type ClientJsonLibrary, checkLibraries } from "./libraries";
+
+export interface MinecraftClientJson {
+  mainClass: string;
+  arguments: ClientJsonArguments;
+  assetIndex: {
+    id: string;
+    url: string;
+    size: number;
+    totalSize: number;
+    sha1: string;
+  };
+  libraries: ClientJsonLibrary[];
+  inheritsFrom?: string;
+}
 
 export async function launchMinecraft(
   account: MinecraftAccount,
   instance: MinecraftInstance,
+  setMessage: (msg: string) => void,
 ) {
+  setMessage("Preparing to launch");
+
   const jsonPath = await path.join(
     instance.directory,
     "versions",
@@ -24,33 +39,31 @@ export async function launchMinecraft(
     `${instance.version}.json`,
   );
   const jsonContent = await readTextFile(jsonPath);
-  const jsonObject = JSON.parse(jsonContent);
+  let jsonObject = JSON.parse(jsonContent);
 
-  const cpBuff: string[] = [];
-  const jsonLibraries = jsonObject.libraries as ClientJsonLibrary[];
-  for (const lib of jsonLibraries) {
-    if (lib.rules && !isAllCompliant(lib.rules)) {
-      continue;
-    }
-    if (lib.downloads?.artifact?.path) {
-      const libPath = await path.join(
-        instance.directory,
-        "libraries",
-        lib.downloads.artifact.path,
-      );
-      if (!(await exists(libPath))) {
-        if (lib.downloads.artifact.url) {
-          console.log(
-            `Library not found: ${libPath}, downloading from ${lib.downloads.artifact.url}`,
-          );
-          await mkdir(await dirname(libPath), { recursive: true });
-          await downloadFile(lib.downloads.artifact.url, libPath);
-        } else console.log(`No download URL for library: ${libPath}`);
-      } else console.log(`Adding library to classpath: ${libPath}`);
-      cpBuff.push(libPath);
-    }
+  if (jsonObject.inheritsFrom) {
+    const parentJsonPath = await path.join(
+      instance.directory,
+      "versions",
+      jsonObject.inheritsFrom,
+      `${jsonObject.inheritsFrom}.json`,
+    );
+    const parentJsonContent = await readTextFile(parentJsonPath);
+    const parentJsonObject = JSON.parse(parentJsonContent);
+
+    jsonObject.libraries.push(...parentJsonObject.libraries);
+    jsonObject.arguments.jvm.push(...parentJsonObject.arguments.jvm);
+    jsonObject.arguments.game.push(...parentJsonObject.arguments.game);
+
+    const newJsonObject = { ...parentJsonObject, ...jsonObject };
+    jsonObject = newJsonObject;
   }
-  cpBuff.push(
+
+  const [classpath, missingLibraries] = await checkLibraries(
+    instance,
+    jsonObject,
+  );
+  classpath.push(
     await path.join(
       instance.directory,
       "versions",
@@ -59,41 +72,33 @@ export async function launchMinecraft(
     ),
   );
 
-  // check and download asset index
-  const assetIndexId = jsonObject.assetIndex.id;
-  const assetIndexUrl = jsonObject.assetIndex.url;
-  const assetIndexPath = await path.join(
-    instance.directory,
-    "assets",
-    "indexes",
-    `${assetIndexId}.json`,
-  );
-  if (!(await exists(assetIndexPath))) {
-    await mkdir(await dirname(assetIndexPath), { recursive: true });
-    await downloadFile(assetIndexUrl, assetIndexPath);
+  const missingAssets = await checkAssets(instance, jsonObject);
+
+  const missingLibrariesEntries = Object.entries(missingLibraries);
+  for (const key in missingLibrariesEntries) {
+    const [dest, url] = missingLibrariesEntries[key];
+    setMessage(
+      `Downloading missing library (${key}/${missingLibrariesEntries.length})`,
+    );
+    await downloadFile(
+      url,
+      await path.join(instance.directory, "libraries", dest),
+    );
   }
 
-  const assetIndexContent = await readTextFile(assetIndexPath);
-  const assetIndexObject = JSON.parse(assetIndexContent) as AssetIndex;
-  const assetObjects = assetIndexObject.objects;
-  for (const [_, value] of Object.entries(assetObjects)) {
-    const hash = value.hash;
-    const subDir = hash.substring(0, 2);
+  for (const key in missingAssets) {
+    const hash = missingAssets[key];
+    const subdir = hash.substring(0, 2);
     const assetPath = await path.join(
       instance.directory,
       "assets",
       "objects",
-      subDir,
+      subdir,
       hash,
     );
-    if (!(await exists(assetPath))) {
-      const assetUrl = `https://resources.download.minecraft.net/${subDir}/${hash}`;
-      console.log(
-        `Asset not found: ${assetPath}, downloading from ${assetUrl}`,
-      );
-      await mkdir(await dirname(assetPath), { recursive: true });
-      await downloadFile(assetUrl, assetPath);
-    }
+    const assetUrl = `https://resources.download.minecraft.net/${subdir}/${hash}`;
+    setMessage(`Downloading missing asset (${key}/${missingAssets.length})`);
+    await downloadFile(assetUrl, assetPath);
   }
 
   const jsonArguments = jsonObject.arguments as ClientJsonArguments;
@@ -117,12 +122,19 @@ export async function launchMinecraft(
     ),
     launcher_name: "Epherome",
     launcher_version: await getVersion(),
-    classpath: cpBuff.join(":"),
+    classpath: classpath.join(":"),
   });
 
   const launchCommand = [...jvmArgs, jsonObject.mainClass, ...gameArgs];
 
-  const command = Command.create("java", launchCommand);
+  const command = Command.create("java", launchCommand, {
+    cwd: instance.directory,
+  });
+
+  setMessage("Minecraft is running");
+
   const result = await command.execute();
   console.log("Minecraft exited with result: ", result);
+
+  setMessage("Minecraft exited");
 }

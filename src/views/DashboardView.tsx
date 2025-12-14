@@ -7,6 +7,7 @@ import { launchMinecraft } from "../core";
 
 export default function DashboardView() {
   const [started, setStarted] = useState(false);
+  const [message, setMessage] = useState("");
 
   const account = configStore.data.accounts.find((account) => account.checked);
   const instance = configStore.data.instances.find(
@@ -23,12 +24,15 @@ export default function DashboardView() {
         </div>
       </Card>
       <div className="grow" />
+      <div>{message}</div>
       <div className="flex items-center space-x-3">
         <Button
           onClick={() => {
             if (account && instance) {
               setStarted(true);
-              launchMinecraft(account, instance).then(() => setStarted(false));
+              launchMinecraft(account, instance, setMessage).then(() =>
+                setStarted(false),
+              );
             }
           }}
           disabled={started || !account || !instance}
