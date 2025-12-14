@@ -8,6 +8,7 @@ import {
   type ClientJsonArguments,
   parseClientJsonArguments,
 } from "./arguments";
+import type { AssetIndex } from "./assets";
 import { downloadFile } from "./download";
 import type { ClientJsonLibrary } from "./libraries";
 import { isAllCompliant } from "./rules";
@@ -57,6 +58,43 @@ export async function launchMinecraft(
       `${instance.version}.jar`,
     ),
   );
+
+  // check and download asset index
+  const assetIndexId = jsonObject.assetIndex.id;
+  const assetIndexUrl = jsonObject.assetIndex.url;
+  const assetIndexPath = await path.join(
+    instance.directory,
+    "assets",
+    "indexes",
+    `${assetIndexId}.json`,
+  );
+  if (!(await exists(assetIndexPath))) {
+    await mkdir(await dirname(assetIndexPath), { recursive: true });
+    await downloadFile(assetIndexUrl, assetIndexPath);
+  }
+
+  const assetIndexContent = await readTextFile(assetIndexPath);
+  const assetIndexObject = JSON.parse(assetIndexContent) as AssetIndex;
+  const assetObjects = assetIndexObject.objects;
+  for (const [_, value] of Object.entries(assetObjects)) {
+    const hash = value.hash;
+    const subDir = hash.substring(0, 2);
+    const assetPath = await path.join(
+      instance.directory,
+      "assets",
+      "objects",
+      subDir,
+      hash,
+    );
+    if (!(await exists(assetPath))) {
+      const assetUrl = `https://resources.download.minecraft.net/${subDir}/${hash}`;
+      console.log(
+        `Asset not found: ${assetPath}, downloading from ${assetUrl}`,
+      );
+      await mkdir(await dirname(assetPath), { recursive: true });
+      await downloadFile(assetUrl, assetPath);
+    }
+  }
 
   const jsonArguments = jsonObject.arguments as ClientJsonArguments;
   const { gameArgs, jvmArgs } = parseClientJsonArguments(jsonArguments, {
