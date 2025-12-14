@@ -1,13 +1,16 @@
 import { path } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
-import { readTextFile } from "@tauri-apps/plugin-fs";
+import { dirname } from "@tauri-apps/api/path";
+import { exists, mkdir, readTextFile } from "@tauri-apps/plugin-fs";
 import { Command } from "@tauri-apps/plugin-shell";
 import type { MinecraftAccount, MinecraftInstance } from "../config";
 import {
   type ClientJsonArguments,
   parseClientJsonArguments,
 } from "./arguments";
+import { downloadFile } from "./download";
 import type { ClientJsonLibrary } from "./libraries";
+import { isAllCompliant } from "./rules";
 
 export async function launchMinecraft(
   account: MinecraftAccount,
@@ -25,12 +28,24 @@ export async function launchMinecraft(
   const cpBuff: string[] = [];
   const jsonLibraries = jsonObject.libraries as ClientJsonLibrary[];
   for (const lib of jsonLibraries) {
-    if (lib.downloads?.artifact) {
+    if (lib.rules && !isAllCompliant(lib.rules)) {
+      continue;
+    }
+    if (lib.downloads?.artifact?.path) {
       const libPath = await path.join(
         instance.directory,
         "libraries",
         lib.downloads.artifact.path,
       );
+      if (!(await exists(libPath))) {
+        if (lib.downloads.artifact.url) {
+          console.log(
+            `Library not found: ${libPath}, downloading from ${lib.downloads.artifact.url}`,
+          );
+          await mkdir(await dirname(libPath), { recursive: true });
+          await downloadFile(lib.downloads.artifact.url, libPath);
+        } else console.log(`No download URL for library: ${libPath}`);
+      } else console.log(`Adding library to classpath: ${libPath}`);
       cpBuff.push(libPath);
     }
   }
@@ -67,11 +82,7 @@ export async function launchMinecraft(
     classpath: cpBuff.join(":"),
   });
 
-  const launchCommand = [
-    ...jvmArgs,
-    "net.minecraft.client.main.Main",
-    ...gameArgs,
-  ];
+  const launchCommand = [...jvmArgs, jsonObject.mainClass, ...gameArgs];
 
   const command = Command.create("java", launchCommand);
   const result = await command.execute();

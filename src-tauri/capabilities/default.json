@@ -24,6 +24,22 @@
       ]
     },
     {
+      "identifier": "fs:allow-mkdir",
+      "allow": [
+        {
+          "path": "**/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-write-file",
+      "allow": [
+        {
+          "path": "**/*"
+        }
+      ]
+    },
+    {
       "identifier": "fs:allow-app-write",
       "allow": [
         {
@@ -35,7 +51,18 @@
     "shell:default",
     {
       "identifier": "shell:allow-execute",
-      "allow": [{ "name": "java", "cmd": "java", "args": true }]
+      "allow": [
+        {
+          "name": "java",
+          "cmd": "java",
+          "args": true
+        }
+      ]
+    },
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [{ "url": "https://**" }, { "url": "http://**" }]
     }
   ]
 }
