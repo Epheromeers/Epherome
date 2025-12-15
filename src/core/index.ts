@@ -9,7 +9,11 @@ import {
 } from "./arguments";
 import { checkAssets } from "./assets";
 import { downloadFile } from "./download";
-import { type ClientJsonLibrary, checkLibraries } from "./libraries";
+import {
+  type ClientJsonLibrary,
+  checkLibraries,
+  checkVersionJar,
+} from "./libraries";
 
 export interface MinecraftClientJson {
   mainClass: string;
@@ -20,6 +24,13 @@ export interface MinecraftClientJson {
     size: number;
     totalSize: number;
     sha1: string;
+  };
+  downloads: {
+    client: {
+      sha1: string;
+      size: number;
+      url: string;
+    };
   };
   libraries: ClientJsonLibrary[];
   inheritsFrom?: string;
@@ -63,6 +74,12 @@ export async function launchMinecraft(
     instance,
     jsonObject,
   );
+
+  if (!jsonObject.inheritsFrom) {
+    setMessage("Checking version jar");
+    await checkVersionJar(instance, jsonObject);
+  }
+
   classpath.push(
     await path.join(
       instance.directory,

@@ -2,6 +2,7 @@ import { path } from "@tauri-apps/api";
 import { exists } from "@tauri-apps/plugin-fs";
 import type { MinecraftInstance } from "../config";
 import type { MinecraftClientJson } from ".";
+import { downloadFile } from "./download";
 import { type ClientJsonRule, isAllCompliant } from "./rules";
 
 interface ClientJsonLibraryDownloadArtifact {
@@ -88,4 +89,19 @@ export async function checkLibraries(
     }
   }
   return [cpBuff, missingLibraries];
+}
+
+export async function checkVersionJar(
+  instance: MinecraftInstance,
+  clientJson: MinecraftClientJson,
+) {
+  const clientJarPath = await path.join(
+    instance.directory,
+    "versions",
+    instance.version,
+    `${instance.version}.jar`,
+  );
+  if (!(await exists(clientJarPath))) {
+    await downloadFile(clientJson.downloads.client.url, clientJarPath);
+  }
 }

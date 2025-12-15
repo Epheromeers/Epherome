@@ -15,6 +15,9 @@ export default function InstancesView() {
       <div className="flex items-center space-x-1">
         <Input placeholder="Search" />
         <Button onClick={() => router.setView("instanceEditor")}>Create</Button>
+        <Button onClick={() => router.setView("instanceDownloader")}>
+          Download
+        </Button>
       </div>
       <div className="p-3 grid grid-cols-2 gap-3">
         {instances.map((value) => (

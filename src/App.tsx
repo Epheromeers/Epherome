@@ -3,6 +3,7 @@ import { RouterContext } from "./router";
 import AccountEditorView from "./views/AccountEditorView";
 import AccountsView from "./views/AccountsView";
 import DashboardView from "./views/DashboardView";
+import InstanceDownloaderView from "./views/InstanceDownloaderView";
 import InstanceEditorView from "./views/InstanceEditorView";
 import InstancesView from "./views/InstancesView";
 import SettingsView from "./views/SettingsView";
@@ -18,12 +19,13 @@ export default function App() {
         ["settings", SettingsView, "Settings"],
         ["accountEditor", AccountEditorView],
         ["instanceEditor", InstanceEditorView],
+        ["instanceDownloader", InstanceDownloaderView],
       ] as [string, React.ComponentType, string?][],
     [],
   );
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       <div className="w-1/6 p-2 border-r border-gray-300 space-y-1">
         {views.map(
           ([key, , label]) =>
@@ -47,7 +49,7 @@ export default function App() {
           getView: () => view,
         }}
       >
-        <div className="w-5/6 p-2">
+        <div className="w-5/6 p-2 overflow-auto">
           {views.map(([key, TheView]) => view === key && <TheView key={key} />)}
         </div>
       </RouterContext>
