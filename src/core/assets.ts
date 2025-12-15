@@ -2,7 +2,7 @@ import { path } from "@tauri-apps/api";
 import { exists, readTextFile } from "@tauri-apps/plugin-fs";
 import type { MinecraftInstance } from "../config";
 import type { MinecraftClientJson } from ".";
-import { downloadFile } from "./download";
+import { checkHash, downloadFile } from "./download";
 
 export interface AssetIndex {
   objects: Record<string, { hash: string; size: number }>;
@@ -38,6 +38,8 @@ export async function checkAssets(
     );
     if (!(await exists(assetPath))) {
       missingAssets.push(hash);
+    } else if (!(await checkHash(assetPath, hash))) {
+      console.log(`Hash mismatch for asset ${hash}`);
     }
   }
   return missingAssets;

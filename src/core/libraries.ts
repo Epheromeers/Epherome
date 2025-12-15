@@ -2,7 +2,7 @@ import { path } from "@tauri-apps/api";
 import { exists } from "@tauri-apps/plugin-fs";
 import type { MinecraftInstance } from "../config";
 import type { MinecraftClientJson } from ".";
-import { downloadFile } from "./download";
+import { checkHash, downloadFile } from "./download";
 import { type ClientJsonRule, isAllCompliant } from "./rules";
 
 interface ClientJsonLibraryDownloadArtifact {
@@ -59,6 +59,11 @@ export async function checkLibraries(
       if (!(await exists(libPath)) && lib.downloads.artifact.url) {
         missingLibraries[lib.downloads.artifact.path] =
           lib.downloads.artifact.url;
+      } else if (
+        lib.downloads.artifact.sha1 &&
+        !(await checkHash(libPath, lib.downloads.artifact.sha1))
+      ) {
+        console.log(`Hash mismatch for library ${lib.downloads.artifact.path}`);
       }
       cpBuff.push(libPath);
     } else if (lib.name && lib.url) {
@@ -103,5 +108,9 @@ export async function checkVersionJar(
   );
   if (!(await exists(clientJarPath))) {
     await downloadFile(clientJson.downloads.client.url, clientJarPath);
+  } else if (
+    !(await checkHash(clientJarPath, clientJson.downloads.client.sha1))
+  ) {
+    console.log(`Hash mismatch for version jar ${instance.version}.jar`);
   }
 }

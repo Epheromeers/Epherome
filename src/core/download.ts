@@ -1,5 +1,5 @@
 import { path } from "@tauri-apps/api";
-import { mkdir, writeFile } from "@tauri-apps/plugin-fs";
+import { mkdir, readFile, writeFile } from "@tauri-apps/plugin-fs";
 import { fetch } from "@tauri-apps/plugin-http";
 
 type MinecraftVersionType = "release" | "snapshot" | "old_alpha" | "old_beta";
@@ -37,4 +37,17 @@ export async function installMinecraft(ver: MinecraftVersion, gameDir: string) {
 
   // Download version JSON
   await downloadFile(ver.url, versionJsonPath);
+}
+
+export async function checkHash(
+  filePath: string,
+  hash: string,
+): Promise<boolean> {
+  const buffer = await readFile(filePath);
+  const hashBuffer = await crypto.subtle.digest("SHA-1", buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const computedHash = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return computedHash === hash;
 }
