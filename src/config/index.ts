@@ -1,6 +1,8 @@
 import { BaseDirectory, writeTextFile } from "@tauri-apps/plugin-fs";
 
 export interface MinecraftInstance {
+  id?: string;
+  timestamp?: number;
   name: string;
   directory: string;
   version: string;
@@ -10,6 +12,8 @@ export interface MinecraftInstance {
 export type MinecraftAccountCategory = "microsoft" | "custom" | "offline";
 
 export interface MinecraftAccount {
+  id?: string;
+  timestamp?: number;
   username: string;
   category: MinecraftAccountCategory;
   uuid?: string;

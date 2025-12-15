@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { Fragment, useContext, useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
@@ -68,6 +69,8 @@ export default function AccountEditorView() {
           onClick={() => {
             if (name) {
               configStore.data.accounts.push({
+                id: nanoid(),
+                timestamp: Date.now(),
                 username: name,
                 category,
                 uuid,

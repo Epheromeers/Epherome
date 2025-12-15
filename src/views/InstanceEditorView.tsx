@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { useContext, useState } from "react";
 import Button from "../components/Button";
 import Helper from "../components/Helper";
@@ -47,6 +48,8 @@ export default function InstanceEditorView() {
           onClick={() => {
             if (name) {
               configStore.data.instances.push({
+                id: nanoid(),
+                timestamp: Date.now(),
                 name,
                 directory,
                 version,

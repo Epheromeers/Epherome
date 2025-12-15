@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { useContext, useEffect, useState } from "react";
 import Button from "../components/Button";
 import Checkbox from "../components/Checkbox";
@@ -31,7 +32,9 @@ export default function InstanceDownloaderView() {
       const ver = versionList.versions.find((v) => v.id === selected);
       if (ver) {
         configStore.data.instances.push({
-          name: `Minecraft ${ver.id} (Downloaded) ${Date.now()}`,
+          id: nanoid(),
+          timestamp: Date.now(),
+          name: `Minecraft ${ver.id} (Downloaded)`,
           directory: gameDirectory,
           version: ver.id,
           checked: false,
