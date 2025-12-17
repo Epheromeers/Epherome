@@ -1,8 +1,12 @@
 import { path } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
+import { invoke } from "@tauri-apps/api/core";
 import { readTextFile } from "@tauri-apps/plugin-fs";
-import { Command } from "@tauri-apps/plugin-shell";
-import type { MinecraftAccount, MinecraftInstance } from "../config";
+import {
+  configStore,
+  type MinecraftAccount,
+  type MinecraftInstance,
+} from "../config";
 import {
   type ClientJsonArguments,
   parseClientJsonArguments,
@@ -144,13 +148,14 @@ export async function launchMinecraft(
 
   const launchCommand = [...jvmArgs, jsonObject.mainClass, ...gameArgs];
 
-  const command = Command.create("java", launchCommand, {
-    cwd: instance.directory,
-  });
-
   setMessage("Minecraft is running");
 
-  const result = await command.execute();
+  const result = await invoke("launch_minecraft", {
+    javaPath: configStore.data.javaPath ?? "java",
+    cwd: instance.directory,
+    args: launchCommand,
+  });
+
   console.log("Minecraft exited with result: ", result);
 
   setMessage(undefined);

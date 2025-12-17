@@ -18,10 +18,6 @@ export default function DashboardView() {
     <div className="flex flex-col h-full p-6">
       <Card className="text-sm">
         <div>Welcome to Epherome!</div>
-        <div>
-          Currently, the Java path in the settings will not be used, the Java in
-          the environment variable PATH will be used instead.
-        </div>
       </Card>
       <div className="grow" />
       <div>{app.getLaunchMessage()}</div>
