@@ -39,7 +39,7 @@ export interface MinecraftClientJson {
 export async function launchMinecraft(
   account: MinecraftAccount,
   instance: MinecraftInstance,
-  setMessage: (msg: string) => void,
+  setMessage: (msg: string | undefined) => void,
 ) {
   setMessage("Preparing to launch");
 
@@ -153,5 +153,5 @@ export async function launchMinecraft(
   const result = await command.execute();
   console.log("Minecraft exited with result: ", result);
 
-  setMessage("Minecraft exited");
+  setMessage(undefined);
 }

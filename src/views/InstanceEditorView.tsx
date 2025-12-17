@@ -1,20 +1,19 @@
 import { nanoid } from "nanoid";
 import { useContext, useState } from "react";
 import Button from "../components/Button";
-import Helper from "../components/Helper";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import { configStore, saveConfig } from "../config";
-import { RouterContext } from "../router";
+import { AppContext } from "../store";
 
 export default function InstanceEditorView() {
-  const router = useContext(RouterContext);
+  const app = useContext(AppContext);
   const [name, setName] = useState(String());
   const [directory, setDirectory] = useState(String());
   const [version, setVersion] = useState(String());
 
   const onBack = () => {
-    router.setView("instances");
+    app.setView("instances");
   };
 
   return (
@@ -22,26 +21,25 @@ export default function InstanceEditorView() {
       <div className="text-lg font-medium pl-3">
         Create a new Minecraft Instance
       </div>
-      <div className="space-y-1 flex flex-col">
-        <Label>Name</Label>
+      <Label title="Name">
         <Input value={name} placeholder="Name" onChange={setName} />
-      </div>
-      <div className="space-y-1 flex flex-col">
-        <Label>Directory</Label>
+      </Label>
+      <Label
+        title="Directory"
+        helper="Usually 'minecraft' on macOS and Linux, '.minecraft' on Windows."
+      >
         <Input
           value={directory}
           placeholder="Directory"
           onChange={setDirectory}
         />
-        <Helper>
-          Usually "minecraft" on macOS and Linux, ".minecraft" on Windows.
-        </Helper>
-      </div>
-      <div className="space-y-1 flex flex-col">
-        <Label>Version</Label>
+      </Label>
+      <Label
+        title="Version"
+        helper="The name of a folder in the versions directory."
+      >
         <Input value={version} placeholder="Version" onChange={setVersion} />
-        <Helper>The name of a folder in the versions directory.</Helper>
-      </div>
+      </Label>
       <div className="flex space-x-1 pl-3">
         <Button onClick={onBack}>Cancel</Button>
         <Button

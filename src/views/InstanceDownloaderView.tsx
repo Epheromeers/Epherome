@@ -8,10 +8,10 @@ import {
   installMinecraft,
   type MinecraftVersionManifest,
 } from "../core/download";
-import { RouterContext } from "../router";
+import { AppContext } from "../store";
 
 export default function InstanceDownloaderView() {
-  const router = useContext(RouterContext);
+  const app = useContext(AppContext);
   const [versionList, setVersionList] =
     useState<MinecraftVersionManifest | null>(null);
   const [release, setRelease] = useState(true);
@@ -41,7 +41,7 @@ export default function InstanceDownloaderView() {
         });
         saveConfig();
         installMinecraft(ver, gameDirectory).then(() =>
-          router.setView("instances"),
+          app.setView("instances"),
         );
         setStarted(true);
       }
@@ -51,7 +51,7 @@ export default function InstanceDownloaderView() {
   return (
     <div className="space-y-2">
       <div className="flex space-x-2">
-        <Button onClick={() => router.setView("instances")}>Back</Button>
+        <Button onClick={() => app.setView("instances")}>Back</Button>
         <Checkbox checked={release} onChange={setRelease}>
           Release
         </Checkbox>

@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useContext } from "react";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Label from "../components/Label";
 import { configStore } from "../config";
 import { launchMinecraft } from "../core";
+import { AppContext } from "../store";
 
 export default function DashboardView() {
-  const [started, setStarted] = useState(false);
-  const [message, setMessage] = useState("");
+  const app = useContext(AppContext);
 
   const account = configStore.data.accounts.find((account) => account.checked);
   const instance = configStore.data.instances.find(
@@ -24,30 +24,23 @@ export default function DashboardView() {
         </div>
       </Card>
       <div className="grow" />
-      <div>{message}</div>
+      <div>{app.getLaunchMessage()}</div>
       <div className="flex items-center space-x-3">
         <Button
           onClick={() => {
             if (account && instance) {
-              setStarted(true);
-              launchMinecraft(account, instance, setMessage).then(() =>
-                setStarted(false),
-              );
+              launchMinecraft(account, instance, app.setLaunchMessage).then();
             }
           }}
-          disabled={started || !account || !instance}
+          disabled={
+            typeof app.getLaunchMessage() === "string" || !account || !instance
+          }
         >
           Launch
         </Button>
         <div className="grow" />
-        <div>
-          <Label>Account</Label>
-          <div className="pl-3">{account ? account.username : "None"}</div>
-        </div>
-        <div>
-          <Label>Instance</Label>
-          <div className="pl-3">{instance ? instance.name : "None"}</div>
-        </div>
+        <Label title="Account">{account ? account.username : "None"}</Label>
+        <Label title="Instance">{instance ? instance.name : "None"}</Label>
       </div>
     </div>
   );

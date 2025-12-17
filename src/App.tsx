@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { RouterContext } from "./router";
+import { AppContext } from "./store";
 import AccountEditorView from "./views/AccountEditorView";
 import AccountsView from "./views/AccountsView";
 import DashboardView from "./views/DashboardView";
@@ -10,6 +10,9 @@ import SettingsView from "./views/SettingsView";
 
 export default function App() {
   const [view, setView] = useState("dashboard");
+  const [launchMessage, setLaunchMessage] = useState<string | undefined>(
+    undefined,
+  );
   const views = useMemo(
     () =>
       [
@@ -41,18 +44,22 @@ export default function App() {
             ),
         )}
       </div>
-      <RouterContext
+      <AppContext
         value={{
           setView: (viewName: string) => {
             setView(viewName);
           },
           getView: () => view,
+          setLaunchMessage: (message?: string | undefined) => {
+            setLaunchMessage(message);
+          },
+          getLaunchMessage: () => launchMessage,
         }}
       >
         <div className="w-5/6 p-2 overflow-auto">
           {views.map(([key, TheView]) => view === key && <TheView key={key} />)}
         </div>
-      </RouterContext>
+      </AppContext>
     </div>
   );
 }

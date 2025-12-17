@@ -9,17 +9,17 @@ import {
   type MinecraftAccountCategory,
   saveConfig,
 } from "../config";
-import { RouterContext } from "../router";
+import { AppContext } from "../store";
 
 export default function AccountEditorView() {
-  const router = useContext(RouterContext);
+  const app = useContext(AppContext);
   const [category, setCategory] = useState<MinecraftAccountCategory>("custom");
   const [uuid, setUUID] = useState(String());
   const [accessToken, setAccessToken] = useState(String());
   const [name, setName] = useState(String());
 
   const onBack = () => {
-    router.setView("accounts");
+    app.setView("accounts");
   };
 
   return (
@@ -27,8 +27,7 @@ export default function AccountEditorView() {
       <div className="text-lg font-medium pl-3">
         Create a new Minecraft Account
       </div>
-      <div className="flex items-center space-x-3">
-        <Label>Category</Label>
+      <Label title="Category">
         <RadioButton
           onClick={() => setCategory("custom")}
           checked={category === "custom"}
@@ -41,26 +40,23 @@ export default function AccountEditorView() {
         >
           Offline
         </RadioButton>
-      </div>
-      <div className="flex flex-col space-y-1">
-        <Label>Username</Label>
+      </Label>
+      <Label title="Username">
         <Input value={name} placeholder="Username" onChange={setName} />
-      </div>
+      </Label>
       {category === "custom" && (
         <Fragment>
-          <div className="flex flex-col space-y-1">
-            <Label>UUID</Label>
+          <Label title="UUID">
             <Input value={uuid} placeholder="UUID" onChange={setUUID} />
-          </div>
-          <div className="flex flex-col space-y-1">
-            <Label>Access Token</Label>
+          </Label>
+          <Label title="Access Token">
             <Input
               value={accessToken}
               placeholder="Access Token"
               onChange={setAccessToken}
               password
             />
-          </div>
+          </Label>
         </Fragment>
       )}
       <div className="flex space-x-1 pl-3">

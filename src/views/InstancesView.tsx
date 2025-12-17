@@ -4,18 +4,18 @@ import Card from "../components/Card";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import { configStore, saveConfig } from "../config";
-import { RouterContext } from "../router";
+import { AppContext } from "../store";
 
 export default function InstancesView() {
   const [instances, setInstances] = useState(configStore.data.instances);
-  const router = useContext(RouterContext);
+  const app = useContext(AppContext);
 
   return (
     <div>
       <div className="flex items-center space-x-1">
         <Input placeholder="Search" />
-        <Button onClick={() => router.setView("instanceEditor")}>Create</Button>
-        <Button onClick={() => router.setView("instanceDownloader")}>
+        <Button onClick={() => app.setView("instanceEditor")}>Create</Button>
+        <Button onClick={() => app.setView("instanceDownloader")}>
           Download
         </Button>
       </div>
@@ -23,14 +23,8 @@ export default function InstancesView() {
         {instances.map((value) => (
           <Card key={value.name}>
             <div className="text-sm font-medium">{value.name}</div>
-            <div>
-              <Label>Directory</Label>
-              <div className="text-sm pl-3">{value.directory}</div>
-            </div>
-            <div>
-              <Label>Version</Label>
-              <div className="text-sm pl-3">{value.version}</div>
-            </div>
+            <Label title="Directory">{value.directory}</Label>
+            <Label title="Version">{value.version}</Label>
             <div className="flex space-x-1 justify-end">
               <Button
                 onClick={() => {
