@@ -1,23 +1,21 @@
 import { nanoid } from "nanoid";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import { configStore, saveConfig } from "../config";
-import { AppContext } from "../store";
 
-export default function InstanceEditorView() {
-  const app = useContext(AppContext);
+export default function InstanceEditorView(props: { onBack: () => void }) {
   const [name, setName] = useState(String());
   const [directory, setDirectory] = useState(String());
   const [version, setVersion] = useState(String());
 
   const onBack = () => {
-    app.setView("instances");
+    props.onBack();
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 p-4">
       <div className="text-lg font-medium pl-3">
         Create a new Minecraft Instance
       </div>

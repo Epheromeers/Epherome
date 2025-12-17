@@ -24,7 +24,7 @@ export default function SettingsView() {
   }, []);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 p-4">
       <Label
         title="Java Path"
         helper="Java is required to launch Minecraft. The path to Java executive fileusually ends with 'java' on macOS and Linux, ends with 'java.exe' onWindows."

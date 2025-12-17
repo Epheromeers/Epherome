@@ -1,10 +1,8 @@
+import { CircleUser, Cog, Grid2X2Check, LayoutDashboard } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppContext } from "./store";
-import AccountEditorView from "./views/AccountEditorView";
 import AccountsView from "./views/AccountsView";
 import DashboardView from "./views/DashboardView";
-import InstanceDownloaderView from "./views/InstanceDownloaderView";
-import InstanceEditorView from "./views/InstanceEditorView";
 import InstancesView from "./views/InstancesView";
 import SettingsView from "./views/SettingsView";
 
@@ -16,30 +14,27 @@ export default function App() {
   const views = useMemo(
     () =>
       [
-        ["dashboard", DashboardView, "Dashboard"],
-        ["accounts", AccountsView, "Accounts"],
-        ["instances", InstancesView, "Instances"],
-        ["settings", SettingsView, "Settings"],
-        ["accountEditor", AccountEditorView],
-        ["instanceEditor", InstanceEditorView],
-        ["instanceDownloader", InstanceDownloaderView],
-      ] as [string, React.ComponentType, string?][],
+        ["dashboard", DashboardView, LayoutDashboard],
+        ["accounts", AccountsView, CircleUser],
+        ["instances", InstancesView, Grid2X2Check],
+        ["settings", SettingsView, Cog],
+      ] as [string, React.ComponentType, React.ComponentType?][],
     [],
   );
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <div className="w-1/6 p-2 border-r border-gray-300 space-y-1">
+      <div className="p-2 border-r border-gray-300 space-y-1">
         {views.map(
-          ([key, , label]) =>
-            label && (
+          ([key, , TheIcon]) =>
+            TheIcon && (
               <button
                 key={key}
-                className={`block text-sm px-3 py-1 rounded-full w-full text-left ${view === key ? "bg-gray-200" : "hover:bg-gray-100 active:bg-gray-200"}`}
+                className={`block rounded p-2 ${view === key ? "bg-gray-100" : "hover:bg-gray-100 active:bg-gray-200"}`}
                 type="button"
                 onClick={() => setView(key)}
               >
-                {label}
+                <TheIcon />
               </button>
             ),
         )}
@@ -56,7 +51,7 @@ export default function App() {
           getLaunchMessage: () => launchMessage,
         }}
       >
-        <div className="w-5/6 p-2 overflow-auto">
+        <div className="grow overflow-auto">
           {views.map(([key, TheView]) => view === key && <TheView key={key} />)}
         </div>
       </AppContext>

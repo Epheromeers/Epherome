@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Label from "../components/Label";
@@ -9,25 +9,21 @@ import {
   type MinecraftAccountCategory,
   saveConfig,
 } from "../config";
-import { AppContext } from "../store";
 
-export default function AccountEditorView() {
-  const app = useContext(AppContext);
+export default function AccountEditorView(props: { onBack: () => void }) {
   const [category, setCategory] = useState<MinecraftAccountCategory>("custom");
   const [uuid, setUUID] = useState(String());
   const [accessToken, setAccessToken] = useState(String());
   const [name, setName] = useState(String());
 
   const onBack = () => {
-    app.setView("accounts");
+    props.onBack();
   };
 
   return (
-    <div className="space-y-3">
-      <div className="text-lg font-medium pl-3">
-        Create a new Minecraft Account
-      </div>
-      <Label title="Category">
+    <div className="space-y-3 p-4">
+      <div className="text-lg font-medium">Edit Minecraft Account</div>
+      <Label title="Category" className="flex space-x-3">
         <RadioButton
           onClick={() => setCategory("custom")}
           checked={category === "custom"}
@@ -59,7 +55,7 @@ export default function AccountEditorView() {
           </Label>
         </Fragment>
       )}
-      <div className="flex space-x-1 pl-3">
+      <div className="flex space-x-1">
         <Button onClick={onBack}>Cancel</Button>
         <Button
           onClick={() => {

@@ -10,7 +10,7 @@ export default function RadioButton(props: {
       onClick={props.onClick}
     >
       <div
-        className={`rounded-full border border-blue-400 p-1 ${props.checked && "bg-blue-400"}`}
+        className={`rounded-full border border-blue-400 p-1.5 ${props.checked && "bg-blue-400"}`}
       />
       <div>{props.children}</div>
     </button>

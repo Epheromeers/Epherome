@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../components/Button";
 import Checkbox from "../components/Checkbox";
 import Input from "../components/Input";
@@ -8,10 +8,8 @@ import {
   installMinecraft,
   type MinecraftVersionManifest,
 } from "../core/download";
-import { AppContext } from "../store";
 
-export default function InstanceDownloaderView() {
-  const app = useContext(AppContext);
+export default function InstanceDownloaderView(props: { onBack: () => void }) {
   const [versionList, setVersionList] =
     useState<MinecraftVersionManifest | null>(null);
   const [release, setRelease] = useState(true);
@@ -40,18 +38,16 @@ export default function InstanceDownloaderView() {
           checked: false,
         });
         saveConfig();
-        installMinecraft(ver, gameDirectory).then(() =>
-          app.setView("instances"),
-        );
+        installMinecraft(ver, gameDirectory).then(() => props.onBack());
         setStarted(true);
       }
     }
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 p-4">
       <div className="flex space-x-2">
-        <Button onClick={() => app.setView("instances")}>Back</Button>
+        <Button onClick={() => props.onBack()}>Back</Button>
         <Checkbox checked={release} onChange={setRelease}>
           Release
         </Checkbox>

@@ -16,6 +16,7 @@
     "@tauri-apps/plugin-http": "^2.5.4",
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-os": "^2.3.2",
+    "lucide-react": "^0.561.0",
     "nanoid": "^5.1.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

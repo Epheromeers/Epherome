@@ -1,55 +1,72 @@
-import { useContext, useState } from "react";
+import { FilePlus } from "lucide-react";
+import { useState } from "react";
 import Button from "../components/Button";
-import Card from "../components/Card";
-import Input from "../components/Input";
+import IconButton from "../components/IconButton";
 import Label from "../components/Label";
 import { configStore, saveConfig } from "../config";
-import { AppContext } from "../store";
+import AccountEditorView from "./AccountEditorView";
 
 export default function AccountsView() {
   const [accounts, setAccounts] = useState(configStore.data.accounts);
-  const app = useContext(AppContext);
+  const currentAccount = accounts.find((acc) => acc.checked);
+  const [creating, setCreating] = useState(false);
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center space-x-1">
-        <Input placeholder="Search" />
-        <Button onClick={() => app.setView("accountEditor")}>Create</Button>
-      </div>
-      <div className="p-3 grid grid-cols-2 gap-3">
-        {accounts.map((value) => (
-          <Card key={value.username}>
-            <div className="text-sm font-medium">{value.username}</div>
-            <Label title="Category">{value.category}</Label>
-            <div className="flex space-x-1 justify-end">
-              <Button
-                onClick={() => {
-                  const former = value.checked;
-                  configStore.data.accounts.forEach((acc) => {
-                    acc.checked = false;
-                  });
-                  if (!former) value.checked = true;
-                  saveConfig();
-                  setAccounts(Array.from(configStore.data.accounts));
-                }}
-              >
-                {value.checked ? "Deselect" : "Select"}
-              </Button>
-              <Button
-                onClick={() => {
-                  configStore.data.accounts = configStore.data.accounts.filter(
-                    (account) => account.username !== value.username,
-                  );
-                  saveConfig();
-                  setAccounts(configStore.data.accounts);
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-          </Card>
+    <div className="flex h-full">
+      <div className="w-1/5 border-r border-gray-300 p-2 space-y-1">
+        <div className="flex justify-center">
+          <IconButton
+            onClick={() => {
+              setCreating(true);
+              setAccounts(configStore.data.accounts);
+            }}
+          >
+            <FilePlus />
+          </IconButton>
+        </div>
+        {accounts.map((account) => (
+          <button
+            type="button"
+            className={`block py-1 px-3 text-sm font-medium w-full rounded text-left ${account.checked ? "bg-gray-100" : "hover:bg-gray-100 active:bg-gray-200"}`}
+            key={account.id}
+            onClick={() => {
+              const former = account.checked;
+              configStore.data.accounts.forEach((acc) => {
+                acc.checked = false;
+              });
+              if (!former) account.checked = true;
+              saveConfig();
+              setAccounts(Array.from(configStore.data.accounts));
+            }}
+          >
+            {account.username}
+          </button>
         ))}
       </div>
+      {creating ? (
+        <AccountEditorView onBack={() => setCreating(false)} />
+      ) : currentAccount ? (
+        <div className="w-4/5 p-3 space-y-2">
+          <Label title="Username">{currentAccount.username}</Label>
+          <Label title="Category">{currentAccount.category}</Label>
+          <Button
+            onClick={() => {
+              configStore.data.accounts = configStore.data.accounts.filter(
+                (account) => account.username !== currentAccount.username,
+              );
+              saveConfig();
+              setAccounts(configStore.data.accounts);
+            }}
+            danger
+          >
+            Delete
+          </Button>
+        </div>
+      ) : (
+        <div className="w-4/5 flex justify-center items-center h-full text-gray-700">
+          No Account Selected.
+        </div>
+      )}
     </div>
   );
 }
