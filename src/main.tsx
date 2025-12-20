@@ -21,8 +21,9 @@ async function initialize() {
       options,
     );
   } else {
+    const originalData = configStore.data;
     const data = await readTextFile("epherome.json", options);
-    configStore.data = JSON.parse(data);
+    configStore.data = { ...originalData, ...JSON.parse(data) };
   }
 }
 

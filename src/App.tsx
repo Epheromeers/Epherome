@@ -5,6 +5,7 @@ import AccountsView from "./views/AccountsView";
 import DashboardView from "./views/DashboardView";
 import InstancesView from "./views/InstancesView";
 import SettingsView from "./views/SettingsView";
+import IconButton from "./components/IconButton";
 
 export default function App() {
   const [view, setView] = useState("dashboard");
@@ -23,19 +24,18 @@ export default function App() {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <div className="p-2 border-r border-gray-300 space-y-1">
+    <div className="flex h-screen overflow-hidden dark:bg-gray-800 dark:text-white">
+      <div className="p-2 border-r border-gray-300 dark:border-gray-700 space-y-1">
         {views.map(
           ([key, , TheIcon]) =>
             TheIcon && (
-              <button
+              <IconButton
+                active={view === key}
                 key={key}
-                className={`block rounded p-2 ${view === key ? "bg-gray-100" : "hover:bg-gray-100 active:bg-gray-200"}`}
-                type="button"
                 onClick={() => setView(key)}
               >
                 <TheIcon />
-              </button>
+              </IconButton>
             ),
         )}
       </div>

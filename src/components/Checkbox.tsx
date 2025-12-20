@@ -10,7 +10,7 @@ export default function Checkbox(props: {
       onClick={() => props.onChange(!props.checked)}
     >
       <div
-        className={`rounded p-2 border border-gray-300 ${props.checked ? "bg-blue-500" : "bg-white"}`}
+        className={`rounded p-2 border border-gray-300 dark:border-gray-700 ${props.checked ? "bg-blue-500" : "bg-white"}`}
       ></div>
       <div>{props.children}</div>
     </button>

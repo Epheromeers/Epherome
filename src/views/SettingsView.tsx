@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Label from "../components/Label";
+import Link from "../components/Link";
+import RadioButton from "../components/RadioButton";
 import { configStore, saveConfig } from "../config";
+import { applyTheme } from "../config/theme";
 
 async function getMeta() {
   const appVersion = await app.getVersion();
@@ -14,6 +17,7 @@ async function getMeta() {
 
 export default function SettingsView() {
   const [javaPath, setJavaPath] = useState(configStore.data.javaPath);
+  const [theme, setTheme] = useState(configStore.data.theme);
   const [meta, setMeta] = useState({
     appVersion: "Loading",
     appDir: "Loading",
@@ -44,13 +48,39 @@ export default function SettingsView() {
           Save
         </Button>
       </Label>
+      <Label title="Color Theme">
+        <RadioButton
+          checked={theme === "light"}
+          onClick={() => {
+            configStore.data.theme = "light";
+            saveConfig();
+            applyTheme();
+            setTheme("light");
+          }}
+        >
+          Light
+        </RadioButton>
+        <RadioButton
+          checked={theme === "dark"}
+          onClick={() => {
+            configStore.data.theme = "dark";
+            saveConfig();
+            applyTheme();
+            setTheme("dark");
+          }}
+        >
+          Dark
+        </RadioButton>
+      </Label>
       <Label title="App Version">{meta.appVersion}</Label>
       <Label title="App Data Directory">{meta.appDir}</Label>
       <Label title="OS">
         {platform()} {version()} {arch()}
       </Label>
       <Label title="GitHub Repository">
-        https://github.com/Epheromeers/Epherome
+        <Link target="https://github.com/Epheromeers/Epherome">
+          https://github.com/Epheromeers/Epherome
+        </Link>
       </Label>
     </div>
   );

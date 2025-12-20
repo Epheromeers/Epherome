@@ -26,6 +26,7 @@ export const configStore = {
     accounts: [] as MinecraftAccount[],
     instances: [] as MinecraftInstance[],
     javaPath: "java",
+    theme: "light",
   },
 };
 

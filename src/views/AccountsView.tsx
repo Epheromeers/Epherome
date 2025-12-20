@@ -13,7 +13,7 @@ export default function AccountsView() {
 
   return (
     <div className="flex h-full">
-      <div className="w-1/5 border-r border-gray-300 p-2 space-y-1">
+      <div className="w-1/5 border-r border-gray-300 dark:border-gray-700 p-2 space-y-1">
         <div className="flex justify-center">
           <IconButton
             onClick={() => {
@@ -27,7 +27,7 @@ export default function AccountsView() {
         {accounts.map((account) => (
           <button
             type="button"
-            className={`block py-1 px-3 text-sm font-medium w-full rounded text-left ${account.checked ? "bg-gray-100" : "hover:bg-gray-100 active:bg-gray-200"}`}
+            className={`block py-1 px-3 text-sm font-medium w-full rounded text-left ${account.checked ? "bg-gray-100 dark:bg-gray-700" : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"}`}
             key={account.id}
             onClick={() => {
               const former = account.checked;
