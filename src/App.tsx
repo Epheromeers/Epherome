@@ -1,11 +1,11 @@
 import { CircleUser, Cog, Grid2X2Check, LayoutDashboard } from "lucide-react";
 import { useMemo, useState } from "react";
+import IconButton from "./components/IconButton";
 import { AppContext } from "./store";
 import AccountsView from "./views/AccountsView";
 import DashboardView from "./views/DashboardView";
 import InstancesView from "./views/InstancesView";
 import SettingsView from "./views/SettingsView";
-import IconButton from "./components/IconButton";
 
 export default function App() {
   const [view, setView] = useState("dashboard");
@@ -24,7 +24,7 @@ export default function App() {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden dark:bg-gray-800 dark:text-white">
+    <div className="flex h-screen dark:bg-gray-800 dark:text-white overflow-hidden">
       <div className="p-2 border-r border-gray-300 dark:border-gray-700 space-y-1">
         {views.map(
           ([key, , TheIcon]) =>

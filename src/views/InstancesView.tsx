@@ -3,6 +3,7 @@ import { useState } from "react";
 import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
+import ListItem from "../components/ListItem";
 import { configStore, saveConfig } from "../config";
 import InstanceDownloaderView from "./InstanceDownloaderView";
 import InstanceEditorView from "./InstanceEditorView";
@@ -16,7 +17,7 @@ export default function InstancesView() {
 
   return (
     <div className="flex h-full">
-      <div className="w-1/5 border-r border-gray-300 dark:border-gray-700 p-2 space-y-1">
+      <div className="w-1/5 border-r border-gray-300 dark:border-gray-700 p-2 space-y-1 overflow-auto">
         <div className="flex justify-center">
           <IconButton onClick={() => setCircumstance("creating")}>
             <FilePlus />
@@ -26,9 +27,7 @@ export default function InstancesView() {
           </IconButton>
         </div>
         {instances.map((instance) => (
-          <button
-            type="button"
-            className={`block py-1 px-3 text-sm font-medium w-full rounded text-left ${instance.checked ? "bg-gray-100 dark:bg-gray-700" : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"}`}
+          <ListItem
             onClick={() => {
               const former = instance.checked;
               configStore.data.instances.forEach((instance) => {
@@ -41,10 +40,10 @@ export default function InstancesView() {
             key={instance.id}
           >
             {instance.name}
-          </button>
+          </ListItem>
         ))}
       </div>
-      <div className="w-4/5">
+      <div className="w-4/5 overflow-auto">
         {circumstance === "creating" ? (
           <InstanceEditorView
             onBack={() => {
@@ -83,53 +82,4 @@ export default function InstancesView() {
       </div>
     </div>
   );
-  /*
-  return (
-    <div>
-      <div className="flex items-center space-x-1">
-        <Input placeholder="Search" />
-        <Button onClick={() => app.setView("instanceEditor")}>Create</Button>
-        <Button onClick={() => app.setView("instanceDownloader")}>
-          Download
-        </Button>
-      </div>
-      <div className="p-3 grid grid-cols-2 gap-3">
-        {instances.map((value) => (
-          <Card key={value.name}>
-            <div className="text-sm font-medium">{value.name}</div>
-            <Label title="Directory">{value.directory}</Label>
-            <Label title="Version">{value.version}</Label>
-            <div className="flex space-x-1 justify-end">
-              <Button
-                onClick={() => {
-                  const former = value.checked;
-                  configStore.data.instances.forEach((instance) => {
-                    instance.checked = false;
-                  });
-                  if (!former) value.checked = true;
-                  saveConfig();
-                  setInstances(Array.from(configStore.data.instances));
-                }}
-              >
-                {value.checked ? "Deselect" : "Select"}
-              </Button>
-              <Button
-                onClick={() => {
-                  configStore.data.instances =
-                    configStore.data.instances.filter(
-                      (instance) => instance.name !== value.name,
-                    );
-                  saveConfig();
-                  setInstances(configStore.data.instances);
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-  */
 }

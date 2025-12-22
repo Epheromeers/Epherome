@@ -3,6 +3,7 @@ import { useState } from "react";
 import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
+import ListItem from "../components/ListItem";
 import { configStore, saveConfig } from "../config";
 import AccountEditorView from "./AccountEditorView";
 
@@ -25,9 +26,7 @@ export default function AccountsView() {
           </IconButton>
         </div>
         {accounts.map((account) => (
-          <button
-            type="button"
-            className={`block py-1 px-3 text-sm font-medium w-full rounded text-left ${account.checked ? "bg-gray-100 dark:bg-gray-700" : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"}`}
+          <ListItem
             key={account.id}
             onClick={() => {
               const former = account.checked;
@@ -40,7 +39,7 @@ export default function AccountsView() {
             }}
           >
             {account.username}
-          </button>
+          </ListItem>
         ))}
       </div>
       {creating ? (
