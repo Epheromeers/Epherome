@@ -73,6 +73,17 @@ export default function SettingsView() {
         >
           Dark
         </RadioButton>
+        <RadioButton
+          checked={theme === "system"}
+          onClick={() => {
+            configStore.data.theme = "system";
+            saveConfig();
+            applyTheme();
+            setTheme("system");
+          }}
+        >
+          System
+        </RadioButton>
       </Label>
       <Label title="App Version">{meta.appVersion}</Label>
       <Label title="App Data Directory">{meta.appDir}</Label>

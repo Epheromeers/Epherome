@@ -11,6 +11,8 @@ export interface MinecraftInstance {
 
 export type MinecraftAccountCategory = "microsoft" | "custom" | "offline";
 
+export type DataTheme = "light" | "dark" | "system";
+
 export interface MinecraftAccount {
   id?: string;
   timestamp?: number;
@@ -26,7 +28,7 @@ export const configStore = {
     accounts: [] as MinecraftAccount[],
     instances: [] as MinecraftInstance[],
     javaPath: "java",
-    theme: "light",
+    theme: "light" as DataTheme,
   },
 };
 
