@@ -10,6 +10,7 @@ import {
   writeTextFile,
 } from "@tauri-apps/plugin-fs";
 import { configStore } from "./config";
+import { applyTheme } from "./config/theme";
 
 async function initialize() {
   const options = { baseDir: BaseDirectory.AppData };
@@ -25,6 +26,7 @@ async function initialize() {
     const data = await readTextFile("epherome.json", options);
     configStore.data = { ...originalData, ...JSON.parse(data) };
   }
+  applyTheme();
 }
 
 initialize().then(() => {

@@ -1,6 +1,6 @@
 import { app, path } from "@tauri-apps/api";
 import { arch, platform, version } from "@tauri-apps/plugin-os";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Label from "../components/Label";
@@ -8,6 +8,7 @@ import Link from "../components/Link";
 import RadioButton from "../components/RadioButton";
 import { configStore, saveConfig } from "../config";
 import { applyTheme } from "../config/theme";
+import { AppContext } from "../store";
 
 async function getMeta() {
   const appVersion = await app.getVersion();
@@ -16,6 +17,7 @@ async function getMeta() {
 }
 
 export default function SettingsView() {
+  const app = useContext(AppContext);
   const [javaPath, setJavaPath] = useState(configStore.data.javaPath);
   const [theme, setTheme] = useState(configStore.data.theme);
   const [meta, setMeta] = useState({
@@ -82,6 +84,16 @@ export default function SettingsView() {
           https://github.com/Epheromeers/Epherome
         </Link>
       </Label>
+      <Button
+        onClick={() =>
+          app.openDialog({
+            title: "Test Dialog",
+            message: "This is a test dialog from SettingsView.",
+          })
+        }
+      >
+        Test Dialog
+      </Button>
     </div>
   );
 }

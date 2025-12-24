@@ -1,7 +1,8 @@
 import { CircleUser, Cog, Grid2X2Check, LayoutDashboard } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
+import Dialog from "./components/Dialog";
 import IconButton from "./components/IconButton";
-import { AppContext } from "./store";
+import { AppContext, type DialogOptions } from "./store";
 import AccountsView from "./views/AccountsView";
 import DashboardView from "./views/DashboardView";
 import InstancesView from "./views/InstancesView";
@@ -22,6 +23,7 @@ export default function App() {
       ] as [string, React.ComponentType, React.ComponentType?][],
     [],
   );
+  const [dialog, setDialog] = useState<DialogOptions | null>(null);
 
   return (
     <div className="flex h-screen dark:bg-gray-800 dark:text-white overflow-hidden">
@@ -49,11 +51,23 @@ export default function App() {
             setLaunchMessage(message);
           },
           getLaunchMessage: () => launchMessage,
+          openDialog: (options: DialogOptions) => {
+            setDialog(options);
+          },
+          closeDialog: () => {
+            setDialog(null);
+          },
         }}
       >
         <div className="grow overflow-auto">
           {views.map(([key, TheView]) => view === key && <TheView key={key} />)}
         </div>
+        {dialog && (
+          <Fragment>
+            <div className="absolute opacity-50 w-full h-full bg-gray-500 z-10" />
+            <Dialog {...dialog} />
+          </Fragment>
+        )}
       </AppContext>
     </div>
   );

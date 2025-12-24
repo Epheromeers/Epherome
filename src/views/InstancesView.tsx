@@ -1,14 +1,16 @@
 import { FileDown, FilePlus } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
 import ListItem from "../components/ListItem";
 import { configStore, saveConfig } from "../config";
+import { AppContext } from "../store";
 import InstanceDownloaderView from "./InstanceDownloaderView";
 import InstanceEditorView from "./InstanceEditorView";
 
 export default function InstancesView() {
+  const app = useContext(AppContext);
   const [instances, setInstances] = useState(configStore.data.instances);
   const currentInstance = instances.find((i) => i.checked);
   const [circumstance, setCircumstance] = useState<
@@ -66,11 +68,20 @@ export default function InstancesView() {
             <Label title="Version">{currentInstance.version}</Label>
             <Button
               onClick={() => {
-                configStore.data.instances = configStore.data.instances.filter(
-                  (instance) => instance.name !== currentInstance.name,
-                );
-                saveConfig();
-                setInstances(configStore.data.instances);
+                app.openDialog({
+                  title: "Delete Instance",
+                  message: `Are you sure you want to delete the instance '${currentInstance.name}'? This action cannot be undone.`,
+                  action: () => {
+                    configStore.data.instances =
+                      configStore.data.instances.filter(
+                        (instance) => instance.name !== currentInstance.name,
+                      );
+                    saveConfig();
+                    setInstances(configStore.data.instances);
+                  },
+                  danger: true,
+                  actionMessage: "Delete",
+                });
               }}
               danger
             >
@@ -78,7 +89,9 @@ export default function InstancesView() {
             </Button>
           </div>
         ) : (
-          <div>No instance selected</div>
+          <div className="flex text-sm justify-center items-center h-full text-gray-500">
+            No Instance Selected.
+          </div>
         )}
       </div>
     </div>

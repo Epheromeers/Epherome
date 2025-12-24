@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Label from "../components/Label";
@@ -18,6 +18,7 @@ import {
   getXBLToken,
   getXSTSToken,
 } from "../core/auth";
+import { AppContext } from "../store";
 
 async function createMicrosoftAccount(): Promise<MinecraftAccount> {
   const authCode = await getAuthCode();
@@ -37,6 +38,7 @@ async function createMicrosoftAccount(): Promise<MinecraftAccount> {
 }
 
 export default function AccountEditorView(props: { onBack: () => void }) {
+  const app = useContext(AppContext);
   const [category, setCategory] =
     useState<MinecraftAccountCategory>("microsoft");
   const [uuid, setUUID] = useState(String());
@@ -74,11 +76,18 @@ export default function AccountEditorView(props: { onBack: () => void }) {
         <div>
           <Button
             onClick={() => {
-              createMicrosoftAccount().then((account) => {
-                configStore.data.accounts.push(account);
-                saveConfig();
-                onBack();
-              });
+              createMicrosoftAccount()
+                .then((account) => {
+                  configStore.data.accounts.push(account);
+                  saveConfig();
+                  onBack();
+                })
+                .catch((err) => {
+                  app.openDialog({
+                    title: "Error",
+                    message: `Failed to add Microsoft account:\n${err}`,
+                  });
+                });
             }}
           >
             Click Me!
