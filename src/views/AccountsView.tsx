@@ -27,6 +27,7 @@ export default function AccountsView() {
         </div>
         {accounts.map((account) => (
           <ListItem
+            checked={account.checked}
             key={account.id}
             onClick={() => {
               const former = account.checked;

@@ -6,12 +6,39 @@ import Label from "../components/Label";
 import RadioButton from "../components/RadioButton";
 import {
   configStore,
+  type MinecraftAccount,
   type MinecraftAccountCategory,
   saveConfig,
 } from "../config";
+import {
+  getAuthCode,
+  getAuthToken,
+  getMinecraftProfile,
+  getMinecraftToken,
+  getXBLToken,
+  getXSTSToken,
+} from "../core/auth";
+
+async function createMicrosoftAccount(): Promise<MinecraftAccount> {
+  const authCode = await getAuthCode();
+  const authToken = await getAuthToken(authCode);
+  const { xblToken, userHash } = await getXBLToken(authToken);
+  const xstsToken = await getXSTSToken(xblToken);
+  const mcToken = await getMinecraftToken(userHash, xstsToken);
+  const { id, name } = await getMinecraftProfile(mcToken);
+  return {
+    id: nanoid(),
+    timestamp: Date.now(),
+    username: name,
+    category: "microsoft",
+    uuid: id,
+    accessToken: mcToken,
+  };
+}
 
 export default function AccountEditorView(props: { onBack: () => void }) {
-  const [category, setCategory] = useState<MinecraftAccountCategory>("custom");
+  const [category, setCategory] =
+    useState<MinecraftAccountCategory>("microsoft");
   const [uuid, setUUID] = useState(String());
   const [accessToken, setAccessToken] = useState(String());
   const [name, setName] = useState(String());
@@ -25,6 +52,12 @@ export default function AccountEditorView(props: { onBack: () => void }) {
       <div className="text-lg font-medium">Edit Minecraft Account</div>
       <Label title="Category" className="flex space-x-3">
         <RadioButton
+          onClick={() => setCategory("microsoft")}
+          checked={category === "microsoft"}
+        >
+          Microsoft
+        </RadioButton>
+        <RadioButton
           onClick={() => setCategory("custom")}
           checked={category === "custom"}
         >
@@ -37,11 +70,29 @@ export default function AccountEditorView(props: { onBack: () => void }) {
           Offline
         </RadioButton>
       </Label>
-      <Label title="Username">
-        <Input value={name} placeholder="Username" onChange={setName} />
-      </Label>
-      {category === "custom" && (
+      {category === "microsoft" ? (
+        <div>
+          <Button
+            onClick={() => {
+              createMicrosoftAccount().then((account) => {
+                configStore.data.accounts.push(account);
+                saveConfig();
+                onBack();
+              });
+            }}
+          >
+            Click Me!
+          </Button>
+        </div>
+      ) : category === "offline" ? (
+        <Label title="Username">
+          <Input value={name} placeholder="Username" onChange={setName} />
+        </Label>
+      ) : (
         <Fragment>
+          <Label title="Username">
+            <Input value={name} placeholder="Username" onChange={setName} />
+          </Label>
           <Label title="UUID">
             <Input value={uuid} placeholder="UUID" onChange={setUUID} />
           </Label>

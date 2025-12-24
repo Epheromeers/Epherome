@@ -28,6 +28,7 @@ export default function InstancesView() {
         </div>
         {instances.map((instance) => (
           <ListItem
+            checked={instance.checked}
             onClick={() => {
               const former = instance.checked;
               configStore.data.instances.forEach((instance) => {
