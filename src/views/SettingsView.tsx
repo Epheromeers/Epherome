@@ -33,7 +33,7 @@ export default function SettingsView() {
     <div className="space-y-3 p-4">
       <Label
         title="Java Path"
-        helper="Java is required to launch Minecraft. The path to Java executive fileusually ends with 'java' on macOS and Linux, ends with 'java.exe' onWindows."
+        helper="Java is required to launch Minecraft. The path to Java executive file usually ends with 'java' on macOS and Linux, ends with 'java.exe' on Windows."
         className="flex items-center space-x-1"
       >
         <Input
@@ -95,16 +95,9 @@ export default function SettingsView() {
           https://github.com/Epheromeers/Epherome
         </Link>
       </Label>
-      <Button
-        onClick={() =>
-          app.openDialog({
-            title: "Test Dialog",
-            message: "This is a test dialog from SettingsView.",
-          })
-        }
-      >
-        Test Dialog
-      </Button>
+      <Label title="Official Website">
+        <Link target="https://epherome.com">https://epherome.com</Link>
+      </Label>
     </div>
   );
 }

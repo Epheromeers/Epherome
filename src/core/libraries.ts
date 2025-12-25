@@ -44,7 +44,7 @@ export async function checkLibraries(
     }
     if (lib.name) {
       const nameParts = lib.name.split(":");
-      const theName = `${nameParts[0]}:${nameParts[1]}`;
+      const theName = `${nameParts[0]}:${nameParts[1]}:${nameParts.length > 3 ? nameParts[3] : String()}`;
       if (nameAdded.includes(theName)) {
         continue;
       }

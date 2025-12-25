@@ -8,6 +8,8 @@ import {
   installMinecraft,
   type MinecraftVersionManifest,
 } from "../core/download";
+import IconButton from "../components/IconButton";
+import { ChevronLeft } from "lucide-react";
 
 export default function InstanceDownloaderView(props: { onBack: () => void }) {
   const [versionList, setVersionList] =
@@ -47,7 +49,10 @@ export default function InstanceDownloaderView(props: { onBack: () => void }) {
   return (
     <div className="space-y-2 p-4">
       <div className="flex space-x-2">
-        <Button onClick={() => props.onBack()}>Back</Button>
+        <IconButton onClick={() => props.onBack()}>
+          <ChevronLeft></ChevronLeft>
+        </IconButton>
+        <div className="grow" />
         <Checkbox checked={release} onChange={setRelease}>
           Release
         </Checkbox>

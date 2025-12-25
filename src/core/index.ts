@@ -7,6 +7,7 @@ import {
   type MinecraftAccount,
   type MinecraftInstance,
 } from "../config";
+import type { AppContextType } from "../store";
 import {
   type ClientJsonArguments,
   parseClientJsonArguments,
@@ -41,6 +42,7 @@ export interface MinecraftClientJson {
 }
 
 export async function launchMinecraft(
+  app: AppContextType,
   account: MinecraftAccount,
   instance: MinecraftInstance,
   setMessage: (msg: string | undefined) => void,
@@ -79,7 +81,16 @@ export async function launchMinecraft(
     jsonObject,
   );
 
-  if (!jsonObject.inheritsFrom) {
+  if (jsonObject.inheritsFrom) {
+    classpath.push(
+      await path.join(
+        instance.directory,
+        "versions",
+        jsonObject.inheritsFrom,
+        `${jsonObject.inheritsFrom}.jar`,
+      ),
+    );
+  } else {
     setMessage("Checking version jar");
     await checkVersionJar(instance, jsonObject);
   }
@@ -150,13 +161,17 @@ export async function launchMinecraft(
 
   setMessage("Minecraft is running");
 
-  const result = await invoke("launch_minecraft", {
-    javaPath: configStore.data.javaPath ?? "java",
-    cwd: instance.directory,
-    args: launchCommand,
-  });
-
-  console.log("Minecraft exited with result: ", result);
-
+  try {
+    await invoke("launch_minecraft", {
+      javaPath: configStore.data.javaPath ?? "java",
+      cwd: instance.directory,
+      args: launchCommand,
+    });
+  } catch (e) {
+    app.openDialog({
+      title: "Launch Failed",
+      message: `${e}`,
+    });
+  }
   setMessage(undefined);
 }

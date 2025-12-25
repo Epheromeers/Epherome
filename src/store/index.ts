@@ -10,7 +10,7 @@ export interface DialogOptions {
   actionMessage?: string;
 }
 
-interface AppContextType {
+export interface AppContextType {
   setView: (viewName: string) => void;
   getView: () => string;
   setLaunchMessage: (message: LaunchMessage) => void;

@@ -11,7 +11,7 @@ export default function Label(props: {
       </div>
       <div className={props.className}>{props.children}</div>
       {props.helper && (
-        <div className="text-xs text-gray-500 dark:text-gray-200 pl-3">
+        <div className="text-xs text-gray-500 dark:text-gray-200">
           {props.helper}
         </div>
       )}

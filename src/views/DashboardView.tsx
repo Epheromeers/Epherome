@@ -21,7 +21,14 @@ export default function DashboardView() {
         <Button
           onClick={() => {
             if (account && instance) {
-              launchMinecraft(account, instance, app.setLaunchMessage).then();
+              launchMinecraft(app, account, instance, app.setLaunchMessage)
+                .then()
+                .catch((e) => {
+                  app.openDialog({
+                    title: "Launch Failed",
+                    message: `${e}`,
+                  });
+                });
             }
           }}
           disabled={
