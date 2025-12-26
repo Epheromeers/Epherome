@@ -1,6 +1,7 @@
 import { FileDown, FilePlus } from "lucide-react";
 import { useContext, useState } from "react";
 import Button from "../components/Button";
+import Center from "../components/Center";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
 import ListItem from "../components/ListItem";
@@ -12,19 +13,19 @@ export default function InstancesView() {
   const app = useContext(AppContext);
   const data = app.getData();
 
-  const currentInstance = data.instances.find((i) => i.checked);
-  const [circumstance, setCircumstance] = useState<
-    undefined | "creating" | "downloading"
-  >();
+  const current = data.instances.find((i) => i.checked);
+  const [showing, setShowing] = useState<
+    "list" | "create" | "download" | "edit"
+  >("list");
 
   return (
     <div className="flex h-full">
       <div className="w-1/5 border-r border-gray-300 dark:border-gray-700 p-2 space-y-1 overflow-auto">
         <div className="flex justify-center">
-          <IconButton onClick={() => setCircumstance("creating")}>
+          <IconButton onClick={() => setShowing("create")}>
             <FilePlus />
           </IconButton>
-          <IconButton onClick={() => setCircumstance("downloading")}>
+          <IconButton onClick={() => setShowing("download")}>
             <FileDown />
           </IconButton>
         </div>
@@ -47,49 +48,63 @@ export default function InstancesView() {
         ))}
       </div>
       <div className="w-4/5 overflow-auto">
-        {circumstance === "creating" ? (
+        {showing === "create" && (
           <InstanceEditorView
             onBack={() => {
-              setCircumstance(undefined);
+              setShowing("list");
             }}
           />
-        ) : circumstance === "downloading" ? (
+        )}
+        {showing === "download" && (
           <InstanceDownloaderView
             onBack={() => {
-              setCircumstance(undefined);
+              setShowing("list");
             }}
           />
-        ) : currentInstance ? (
-          <div className="p-4 space-y-2">
-            <Label title="Name">{currentInstance.name}</Label>
-            <Label title="Directory">{currentInstance.directory}</Label>
-            <Label title="Version">{currentInstance.version}</Label>
-            <Button
-              onClick={() => {
-                app.openDialog({
-                  title: "Delete Instance",
-                  message: `Are you sure you want to delete the instance '${currentInstance.name}'? This action cannot be undone.`,
-                  action: () => {
-                    app.setData((prevData) => {
-                      prevData.instances = prevData.instances.filter(
-                        (instance) => instance.name !== currentInstance.name,
-                      );
-                    });
-                  },
-                  danger: true,
-                  actionMessage: "Delete",
-                });
-              }}
-              danger
-            >
-              Delete
-            </Button>
-          </div>
-        ) : (
-          <div className="flex text-sm justify-center items-center h-full text-gray-500">
-            No Instance Selected.
-          </div>
         )}
+        {showing === "edit" && (
+          <InstanceEditorView
+            previous={current}
+            onBack={() => {
+              setShowing("list");
+            }}
+          />
+        )}
+        {showing === "list" &&
+          (current ? (
+            <div className="p-4 space-y-2">
+              <Label title="Name">{current.name}</Label>
+              <Label title="Directory">{current.directory}</Label>
+              <Label title="Version">{current.version}</Label>
+              <div className="flex space-x-2">
+                <Button onClick={() => setShowing("edit")}>Edit</Button>
+                <Button
+                  onClick={() => {
+                    app.openDialog({
+                      title: "Delete Instance",
+                      message: `Are you sure you want to delete the instance '${current.name}'? This action cannot be undone.`,
+                      action: () => {
+                        app.setData((prevData) => {
+                          prevData.instances = prevData.instances.filter(
+                            (instance) => instance.id !== current.id,
+                          );
+                        });
+                      },
+                      danger: true,
+                      actionMessage: "Delete",
+                    });
+                  }}
+                  danger
+                >
+                  Delete
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Center className="h-full">
+              Choose an instance on the list to view details.
+            </Center>
+          ))}
       </div>
     </div>
   );

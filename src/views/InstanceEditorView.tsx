@@ -4,13 +4,18 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import { AppContext } from "../store";
+import type { MinecraftInstance } from "../store/data";
 
-export default function InstanceEditorView(props: { onBack: () => void }) {
+export default function InstanceEditorView(props: {
+  onBack: () => void;
+  previous?: MinecraftInstance;
+}) {
   const app = useContext(AppContext);
+  const prev = props.previous;
 
-  const [name, setName] = useState(String());
-  const [directory, setDirectory] = useState(String());
-  const [version, setVersion] = useState(String());
+  const [name, setName] = useState(prev?.name ?? String());
+  const [directory, setDirectory] = useState(prev?.directory ?? String());
+  const [version, setVersion] = useState(prev?.version ?? String());
 
   const onBack = () => {
     props.onBack();
@@ -19,7 +24,7 @@ export default function InstanceEditorView(props: { onBack: () => void }) {
   return (
     <div className="space-y-3 p-4">
       <div className="text-lg font-medium pl-3">
-        Create a new Minecraft Instance
+        {prev ? "Edit Minecraft Instance" : "Create a new Minecraft Instance"}
       </div>
       <Label title="Name">
         <Input value={name} placeholder="Name" onChange={setName} />
@@ -44,7 +49,7 @@ export default function InstanceEditorView(props: { onBack: () => void }) {
         <Button onClick={onBack}>Cancel</Button>
         <Button
           onClick={() => {
-            if (name) {
+            if (name && directory && version && !prev) {
               app.setData((prevData) => {
                 prevData.instances.push({
                   id: nanoid(),
@@ -53,6 +58,18 @@ export default function InstanceEditorView(props: { onBack: () => void }) {
                   directory,
                   version,
                 });
+              });
+              onBack();
+            } else {
+              app.setData((prevData) => {
+                const prevInstance = prevData.instances.find(
+                  (i) => i.id === prev?.id,
+                );
+                if (prevInstance) {
+                  prevInstance.name = name;
+                  prevInstance.directory = directory;
+                  prevInstance.version = version;
+                }
               });
               onBack();
             }

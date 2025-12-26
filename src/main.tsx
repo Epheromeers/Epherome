@@ -3,10 +3,13 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { ensureDataDir, readUserData } from "./store/data";
+import { updateTheme } from "./store/theme";
 
 async function initialize() {
   await ensureDataDir();
-  return await readUserData();
+  const userData = await readUserData();
+  updateTheme(userData.settings.theme);
+  return userData;
 }
 
 initialize().then((userData) => {

@@ -49,7 +49,7 @@ export const fallbackUserData: UserData = {
 
 export async function ensureDataDir() {
   const dataDir = await path.appDataDir();
-  const dataPath = await path.join(await path.appDataDir(), "epherome.json");
+  const dataPath = await path.join(await path.appDataDir(), "data.json");
 
   if (!(await exists(dataDir))) {
     await mkdir(dataDir);
@@ -60,12 +60,13 @@ export async function ensureDataDir() {
 }
 
 export async function readUserData() {
-  const dataPath = await path.join(await path.appDataDir(), "epherome.json");
+  const dataPath = await path.join(await path.appDataDir(), "data.json");
   const dataContent = await readTextFile(dataPath);
-  return JSON.parse(dataContent) as UserData;
+  const dataObject = JSON.parse(dataContent);
+  return { ...fallbackUserData, ...dataObject };
 }
 
 export async function writeUserData(userData: UserData) {
-  const dataPath = await path.join(await path.appDataDir(), "epherome.json");
+  const dataPath = await path.join(await path.appDataDir(), "data.json");
   await writeTextFile(dataPath, JSON.stringify(userData));
 }

@@ -36,8 +36,10 @@ export default function DashboardView() {
           Launch
         </Button>
         <div className="grow" />
-        <Label title="Account">{account ? account.username : "None"}</Label>
-        <Label title="Instance">{instance ? instance.name : "None"}</Label>
+        <div>
+          <Label title="Account">{account ? account.username : "None"}</Label>
+          <Label title="Instance">{instance ? instance.name : "None"}</Label>
+        </div>
       </div>
     </div>
   );
