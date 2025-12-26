@@ -24,7 +24,7 @@ export class ParallelManager {
   current: ParallelTask[] = [];
   onChange: (tasks: ParallelTask[]) => void;
   finished: number = 0;
-  onFinish?: () => void;
+  private onFinish?: () => void;
 
   constructor(
     tasks: OmittedParallelTask[],
@@ -38,7 +38,20 @@ export class ParallelManager {
     this.onChange = onChange;
   }
 
+  setOnFinish(callback: () => void) {
+    this.onFinish = callback;
+    this.checkFinish();
+  }
+
+  checkFinish() {
+    if (this.finished === this.tasks.length && this.onFinish) {
+      this.onFinish();
+    }
+  }
+
   start() {
+    this.checkFinish();
+
     for (const item of this.tasks) {
       if (this.current.length >= this.maxConcurrent) break;
       if (item.completed) continue;
@@ -52,10 +65,7 @@ export class ParallelManager {
           this.current = this.current.filter((t) => t.id !== item.id);
           this.onChange(this.current);
           this.start();
-
-          if (this.finished === this.tasks.length && this.onFinish) {
-            this.onFinish();
-          }
+          this.checkFinish();
         })
         .catch(() => {
           console.error(`Failed to download ${item.name}`);
@@ -65,10 +75,7 @@ export class ParallelManager {
           this.current = this.current.filter((t) => t.id !== item.id);
           this.onChange(this.current);
           this.start();
-
-          if (this.finished === this.tasks.length && this.onFinish) {
-            this.onFinish();
-          }
+          this.checkFinish();
         });
       this.current.push(item);
       this.onChange(this.current);

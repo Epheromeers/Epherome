@@ -131,9 +131,7 @@ export async function launchMinecraft(
   libraryDownloadManager.start();
 
   await new Promise<void>((resolve) => {
-    libraryDownloadManager.onFinish = () => {
-      resolve();
-    };
+    libraryDownloadManager.setOnFinish(resolve);
   });
 
   const assetDownloadManager = new ParallelManager(
@@ -165,9 +163,7 @@ export async function launchMinecraft(
   assetDownloadManager.start();
 
   await new Promise<void>((resolve) => {
-    assetDownloadManager.onFinish = () => {
-      resolve();
-    };
+    assetDownloadManager.setOnFinish(resolve);
   });
 
   const jsonArguments = jsonObject.arguments as ClientJsonArguments;
