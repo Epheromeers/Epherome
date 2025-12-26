@@ -9,12 +9,12 @@ import {
   parseClientJsonArguments,
 } from "./arguments";
 import { checkAssets } from "./assets";
-import { downloadFile } from "./download";
 import {
   type ClientJsonLibrary,
   checkLibraries,
   checkVersionJar,
 } from "./libraries";
+import { ParallelManager, type ParallelTask } from "./parallel";
 
 export interface MinecraftClientJson {
   mainClass: string;
@@ -42,6 +42,7 @@ export async function launchMinecraft(
   account: MinecraftAccount,
   instance: MinecraftInstance,
   setMessage: (msg: string | undefined) => void,
+  setDownloadList: (list: ParallelTask[]) => void,
 ) {
   setMessage("Preparing to launch");
 
@@ -103,31 +104,71 @@ export async function launchMinecraft(
   const missingAssets = await checkAssets(instance, jsonObject);
 
   const missingLibrariesEntries = Object.entries(missingLibraries);
-  for (const key in missingLibrariesEntries) {
-    const [dest, url] = missingLibrariesEntries[key];
-    setMessage(
-      `Downloading missing library (${key}/${missingLibrariesEntries.length})`,
-    );
-    await downloadFile(
-      url,
-      await path.join(instance.directory, "libraries", dest),
-    );
-  }
 
-  for (const key in missingAssets) {
-    const hash = missingAssets[key];
-    const subdir = hash.substring(0, 2);
-    const assetPath = await path.join(
-      instance.directory,
-      "assets",
-      "objects",
-      subdir,
-      hash,
-    );
-    const assetUrl = `https://resources.download.minecraft.net/${subdir}/${hash}`;
-    setMessage(`Downloading missing asset (${key}/${missingAssets.length})`);
-    await downloadFile(assetUrl, assetPath);
-  }
+  const libraryDownloadManager = new ParallelManager(
+    await Promise.all(
+      missingLibrariesEntries.map(async ([dest, url]) => {
+        const destination = await path.join(
+          instance.directory,
+          "libraries",
+          dest,
+        );
+        return {
+          url,
+          name: await path.basename(destination),
+          destination,
+        };
+      }),
+    ),
+    (list) => {
+      setMessage(
+        `Downloading missing library (${libraryDownloadManager.finished}/${missingLibrariesEntries.length})`,
+      );
+      setDownloadList(list);
+    },
+  );
+
+  libraryDownloadManager.start();
+
+  await new Promise<void>((resolve) => {
+    libraryDownloadManager.onFinish = () => {
+      resolve();
+    };
+  });
+
+  const assetDownloadManager = new ParallelManager(
+    await Promise.all(
+      missingAssets.map(async (hash) => {
+        const subdir = hash.substring(0, 2);
+        const destination = await path.join(
+          instance.directory,
+          "assets",
+          "objects",
+          subdir,
+          hash,
+        );
+        return {
+          url: `https://resources.download.minecraft.net/${subdir}/${hash}`,
+          name: await path.basename(destination),
+          destination,
+        };
+      }),
+    ),
+    (list) => {
+      setMessage(
+        `Downloading missing asset (${assetDownloadManager.finished}/${missingAssets.length})`,
+      );
+      setDownloadList(list);
+    },
+  );
+
+  assetDownloadManager.start();
+
+  await new Promise<void>((resolve) => {
+    assetDownloadManager.onFinish = () => {
+      resolve();
+    };
+  });
 
   const jsonArguments = jsonObject.arguments as ClientJsonArguments;
   const { gameArgs, jvmArgs } = parseClientJsonArguments(jsonArguments, {

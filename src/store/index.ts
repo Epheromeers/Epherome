@@ -1,6 +1,8 @@
 import { createContext } from "react";
 import { fallbackUserData, type UserData } from "./data";
 
+export const errorList: string[] = [];
+
 export interface DialogOptions {
   title: string;
   message: string;

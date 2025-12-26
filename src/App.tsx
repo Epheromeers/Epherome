@@ -1,4 +1,10 @@
-import { CircleUser, Cog, Grid2X2Check, LayoutDashboard } from "lucide-react";
+import {
+  Braces,
+  CircleUser,
+  Cog,
+  Grid2X2Check,
+  LayoutDashboard,
+} from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import Dialog from "./components/Dialog";
 import IconButton from "./components/IconButton";
@@ -7,6 +13,7 @@ import { type UserData, writeUserData } from "./store/data";
 import { updateTheme } from "./store/theme";
 import AccountsView from "./views/AccountsView";
 import DashboardView from "./views/DashboardView";
+import ErrorView from "./views/ErrorView";
 import InstancesView from "./views/InstancesView";
 import SettingsView from "./views/SettingsView";
 
@@ -22,6 +29,7 @@ export default function App(props: { userData: UserData }) {
         ["accounts", AccountsView, CircleUser],
         ["instances", InstancesView, Grid2X2Check],
         ["settings", SettingsView, Cog],
+        ["error", ErrorView, Braces],
       ] as [string, React.ComponentType, React.ComponentType?][],
     [],
   );
