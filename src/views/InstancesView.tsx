@@ -4,15 +4,15 @@ import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
 import ListItem from "../components/ListItem";
-import { configStore, saveConfig } from "../config";
 import { AppContext } from "../store";
 import InstanceDownloaderView from "./InstanceDownloaderView";
 import InstanceEditorView from "./InstanceEditorView";
 
 export default function InstancesView() {
   const app = useContext(AppContext);
-  const [instances, setInstances] = useState(configStore.data.instances);
-  const currentInstance = instances.find((i) => i.checked);
+  const data = app.getData();
+
+  const currentInstance = data.instances.find((i) => i.checked);
   const [circumstance, setCircumstance] = useState<
     undefined | "creating" | "downloading"
   >();
@@ -28,17 +28,17 @@ export default function InstancesView() {
             <FileDown />
           </IconButton>
         </div>
-        {instances.map((instance) => (
+        {data.instances.map((instance) => (
           <ListItem
             checked={instance.checked}
             onClick={() => {
-              const former = instance.checked;
-              configStore.data.instances.forEach((instance) => {
-                instance.checked = false;
+              app.setData((prevData) => {
+                const former = instance.checked;
+                prevData.instances.forEach((instance) => {
+                  instance.checked = false;
+                });
+                if (!former) instance.checked = true;
               });
-              if (!former) instance.checked = true;
-              saveConfig();
-              setInstances(Array.from(configStore.data.instances));
             }}
             key={instance.id}
           >
@@ -51,14 +51,12 @@ export default function InstancesView() {
           <InstanceEditorView
             onBack={() => {
               setCircumstance(undefined);
-              setInstances(Array.from(configStore.data.instances));
             }}
           />
         ) : circumstance === "downloading" ? (
           <InstanceDownloaderView
             onBack={() => {
               setCircumstance(undefined);
-              setInstances(Array.from(configStore.data.instances));
             }}
           />
         ) : currentInstance ? (
@@ -72,12 +70,11 @@ export default function InstancesView() {
                   title: "Delete Instance",
                   message: `Are you sure you want to delete the instance '${currentInstance.name}'? This action cannot be undone.`,
                   action: () => {
-                    configStore.data.instances =
-                      configStore.data.instances.filter(
+                    app.setData((prevData) => {
+                      prevData.instances = prevData.instances.filter(
                         (instance) => instance.name !== currentInstance.name,
                       );
-                    saveConfig();
-                    setInstances(configStore.data.instances);
+                    });
                   },
                   danger: true,
                   actionMessage: "Delete",

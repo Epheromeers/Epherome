@@ -4,14 +4,14 @@ import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
 import ListItem from "../components/ListItem";
-import { configStore, saveConfig } from "../config";
 import { AppContext } from "../store";
 import AccountEditorView from "./AccountEditorView";
 
 export default function AccountsView() {
   const app = useContext(AppContext);
-  const [accounts, setAccounts] = useState(configStore.data.accounts);
-  const currentAccount = accounts.find((acc) => acc.checked);
+  const data = app.getData();
+
+  const currentAccount = data.accounts.find((acc) => acc.checked);
   const [creating, setCreating] = useState(false);
 
   return (
@@ -21,24 +21,23 @@ export default function AccountsView() {
           <IconButton
             onClick={() => {
               setCreating(true);
-              setAccounts(configStore.data.accounts);
             }}
           >
             <FilePlus />
           </IconButton>
         </div>
-        {accounts.map((account) => (
+        {data.accounts.map((account) => (
           <ListItem
             checked={account.checked}
             key={account.id}
             onClick={() => {
-              const former = account.checked;
-              configStore.data.accounts.forEach((acc) => {
-                acc.checked = false;
+              app.setData((prevData) => {
+                const former = account.checked;
+                prevData.accounts.forEach((acc) => {
+                  acc.checked = false;
+                });
+                if (!former) account.checked = true;
               });
-              if (!former) account.checked = true;
-              saveConfig();
-              setAccounts(Array.from(configStore.data.accounts));
             }}
           >
             {account.username}
@@ -58,13 +57,12 @@ export default function AccountsView() {
                   title: "Delete Account",
                   message: `Are you sure you want to delete the account '${currentAccount.username}'? This action cannot be undone.`,
                   action: () => {
-                    configStore.data.accounts =
-                      configStore.data.accounts.filter(
+                    app.setData((prevData) => {
+                      prevData.accounts = prevData.accounts.filter(
                         (account) =>
                           account.username !== currentAccount.username,
                       );
-                    saveConfig();
-                    setAccounts(configStore.data.accounts);
+                    });
                   },
                   danger: true,
                   actionMessage: "Delete",

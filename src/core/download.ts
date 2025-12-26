@@ -1,5 +1,5 @@
 import { path } from "@tauri-apps/api";
-import { mkdir, readFile, writeFile } from "@tauri-apps/plugin-fs";
+import { exists, mkdir, readFile, writeFile } from "@tauri-apps/plugin-fs";
 import { fetch } from "@tauri-apps/plugin-http";
 
 type MinecraftVersionType = "release" | "snapshot" | "old_alpha" | "old_beta";
@@ -31,6 +31,9 @@ export async function downloadFile(
 }
 
 export async function installMinecraft(ver: MinecraftVersion, gameDir: string) {
+  if (!(await exists(gameDir))) {
+    throw new Error(`Game directory ${gameDir} does not exist.`);
+  }
   const versionDir = await path.join(gameDir, "versions", ver.id);
   await mkdir(versionDir, { recursive: true });
   const versionJsonPath = await path.join(versionDir, `${ver.id}.json`);

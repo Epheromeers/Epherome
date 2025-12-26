@@ -6,8 +6,6 @@ import Input from "../components/Input";
 import Label from "../components/Label";
 import Link from "../components/Link";
 import RadioButton from "../components/RadioButton";
-import { configStore, saveConfig } from "../config";
-import { applyTheme } from "../config/theme";
 import { AppContext } from "../store";
 
 async function getMeta() {
@@ -18,8 +16,9 @@ async function getMeta() {
 
 export default function SettingsView() {
   const app = useContext(AppContext);
-  const [javaPath, setJavaPath] = useState(configStore.data.javaPath);
-  const [theme, setTheme] = useState(configStore.data.theme);
+  const data = app.getData();
+
+  const [javaPath, setJavaPath] = useState(data.settings.javaPath);
   const [meta, setMeta] = useState({
     appVersion: "Loading",
     appDir: "Loading",
@@ -42,44 +41,42 @@ export default function SettingsView() {
           onChange={setJavaPath}
         />
         <Button
-          onClick={() => {
-            configStore.data.javaPath = javaPath;
-            saveConfig();
-          }}
+          onClick={() =>
+            app.setData((prev) => {
+              prev.settings.javaPath = javaPath;
+            })
+          }
         >
           Save
         </Button>
       </Label>
       <Label title="Color Theme">
         <RadioButton
-          checked={theme === "light"}
+          checked={data.settings.theme === "light"}
           onClick={() => {
-            configStore.data.theme = "light";
-            saveConfig();
-            applyTheme();
-            setTheme("light");
+            app.setData((prev) => {
+              prev.settings.theme = "light";
+            });
           }}
         >
           Light
         </RadioButton>
         <RadioButton
-          checked={theme === "dark"}
+          checked={data.settings.theme === "dark"}
           onClick={() => {
-            configStore.data.theme = "dark";
-            saveConfig();
-            applyTheme();
-            setTheme("dark");
+            app.setData((prev) => {
+              prev.settings.theme = "dark";
+            });
           }}
         >
           Dark
         </RadioButton>
         <RadioButton
-          checked={theme === "system"}
+          checked={data.settings.theme === "system"}
           onClick={() => {
-            configStore.data.theme = "system";
-            saveConfig();
-            applyTheme();
-            setTheme("system");
+            app.setData((prev) => {
+              prev.settings.theme = "system";
+            });
           }}
         >
           System

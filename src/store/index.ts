@@ -1,6 +1,5 @@
 import { createContext } from "react";
-
-type LaunchMessage = string | undefined;
+import { fallbackUserData, type UserData } from "./data";
 
 export interface DialogOptions {
   title: string;
@@ -13,10 +12,12 @@ export interface DialogOptions {
 export interface AppContextType {
   setView: (viewName: string) => void;
   getView: () => string;
-  setLaunchMessage: (message: LaunchMessage) => void;
-  getLaunchMessage: () => LaunchMessage;
+  setLaunchMessage: (message: string | undefined) => void;
+  getLaunchMessage: () => string | undefined;
   openDialog: (options: DialogOptions) => void;
   closeDialog: () => void;
+  getData: () => UserData;
+  setData: (updater: (prevData: UserData) => void) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -26,4 +27,6 @@ export const AppContext = createContext<AppContextType>({
   getLaunchMessage: () => "not implemented",
   openDialog: () => {},
   closeDialog: () => {},
+  getData: () => fallbackUserData,
+  setData: () => {},
 });

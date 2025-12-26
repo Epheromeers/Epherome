@@ -1,17 +1,15 @@
 import { useContext } from "react";
 import Button from "../components/Button";
 import Label from "../components/Label";
-import { configStore } from "../config";
 import { launchMinecraft } from "../core";
 import { AppContext } from "../store";
 
 export default function DashboardView() {
   const app = useContext(AppContext);
+  const data = app.getData();
 
-  const account = configStore.data.accounts.find((account) => account.checked);
-  const instance = configStore.data.instances.find(
-    (instance) => instance.checked,
-  );
+  const account = data.accounts.find((account) => account.checked);
+  const instance = data.instances.find((instance) => instance.checked);
 
   return (
     <div className="flex flex-col h-full p-6">

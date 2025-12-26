@@ -1,11 +1,13 @@
 import { nanoid } from "nanoid";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Label from "../components/Label";
-import { configStore, saveConfig } from "../config";
+import { AppContext } from "../store";
 
 export default function InstanceEditorView(props: { onBack: () => void }) {
+  const app = useContext(AppContext);
+
   const [name, setName] = useState(String());
   const [directory, setDirectory] = useState(String());
   const [version, setVersion] = useState(String());
@@ -43,14 +45,15 @@ export default function InstanceEditorView(props: { onBack: () => void }) {
         <Button
           onClick={() => {
             if (name) {
-              configStore.data.instances.push({
-                id: nanoid(),
-                timestamp: Date.now(),
-                name,
-                directory,
-                version,
+              app.setData((prevData) => {
+                prevData.instances.push({
+                  id: nanoid(),
+                  timestamp: Date.now(),
+                  name,
+                  directory,
+                  version,
+                });
               });
-              saveConfig();
               onBack();
             }
           }}

@@ -1,17 +1,18 @@
+import { ChevronLeft } from "lucide-react";
 import { nanoid } from "nanoid";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "../components/Button";
 import Checkbox from "../components/Checkbox";
+import IconButton from "../components/IconButton";
 import Input from "../components/Input";
-import { configStore, saveConfig } from "../config";
 import {
   installMinecraft,
   type MinecraftVersionManifest,
 } from "../core/download";
-import IconButton from "../components/IconButton";
-import { ChevronLeft } from "lucide-react";
+import { AppContext } from "../store";
 
 export default function InstanceDownloaderView(props: { onBack: () => void }) {
+  const app = useContext(AppContext);
   const [versionList, setVersionList] =
     useState<MinecraftVersionManifest | null>(null);
   const [release, setRelease] = useState(true);
@@ -31,16 +32,24 @@ export default function InstanceDownloaderView(props: { onBack: () => void }) {
     if (selected && versionList && gameDirectory) {
       const ver = versionList.versions.find((v) => v.id === selected);
       if (ver) {
-        configStore.data.instances.push({
-          id: nanoid(),
-          timestamp: Date.now(),
-          name: `Minecraft ${ver.id} (Downloaded)`,
-          directory: gameDirectory,
-          version: ver.id,
-          checked: false,
+        app.setData((prevData) => {
+          prevData.instances.push({
+            id: nanoid(),
+            timestamp: Date.now(),
+            name: `Minecraft ${ver.id} (Downloaded)`,
+            directory: gameDirectory,
+            version: ver.id,
+            checked: false,
+          });
         });
-        saveConfig();
-        installMinecraft(ver, gameDirectory).then(() => props.onBack());
+        installMinecraft(ver, gameDirectory)
+          .then(() => props.onBack())
+          .catch((e) =>
+            app.openDialog({
+              title: "Error Occurred",
+              message: `${e}`,
+            }),
+          );
         setStarted(true);
       }
     }

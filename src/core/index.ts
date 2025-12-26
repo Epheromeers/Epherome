@@ -2,12 +2,8 @@ import { path } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { readTextFile } from "@tauri-apps/plugin-fs";
-import {
-  configStore,
-  type MinecraftAccount,
-  type MinecraftInstance,
-} from "../config";
 import type { AppContextType } from "../store";
+import type { MinecraftAccount, MinecraftInstance } from "../store/data";
 import {
   type ClientJsonArguments,
   parseClientJsonArguments,
@@ -163,7 +159,7 @@ export async function launchMinecraft(
 
   try {
     await invoke("launch_minecraft", {
-      javaPath: configStore.data.javaPath ?? "java",
+      javaPath: app.getData().settings.javaPath ?? "java",
       cwd: instance.directory,
       args: launchCommand,
     });

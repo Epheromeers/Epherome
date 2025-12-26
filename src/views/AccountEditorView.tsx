@@ -5,12 +5,6 @@ import Input from "../components/Input";
 import Label from "../components/Label";
 import RadioButton from "../components/RadioButton";
 import {
-  configStore,
-  type MinecraftAccount,
-  type MinecraftAccountCategory,
-  saveConfig,
-} from "../config";
-import {
   getAuthCode,
   getAuthToken,
   getMinecraftProfile,
@@ -19,6 +13,7 @@ import {
   getXSTSToken,
 } from "../core/auth";
 import { AppContext } from "../store";
+import type { MinecraftAccount, MinecraftAccountCategory } from "../store/data";
 
 async function createMicrosoftAccount(): Promise<MinecraftAccount> {
   const authCode = await getAuthCode();
@@ -39,6 +34,7 @@ async function createMicrosoftAccount(): Promise<MinecraftAccount> {
 
 export default function AccountEditorView(props: { onBack: () => void }) {
   const app = useContext(AppContext);
+
   const [category, setCategory] =
     useState<MinecraftAccountCategory>("microsoft");
   const [uuid, setUUID] = useState(String());
@@ -78,8 +74,9 @@ export default function AccountEditorView(props: { onBack: () => void }) {
             onClick={() => {
               createMicrosoftAccount()
                 .then((account) => {
-                  configStore.data.accounts.push(account);
-                  saveConfig();
+                  app.setData((prev) => {
+                    prev.accounts.push(account);
+                  });
                   onBack();
                 })
                 .catch((err) => {
@@ -120,15 +117,16 @@ export default function AccountEditorView(props: { onBack: () => void }) {
         <Button
           onClick={() => {
             if (name) {
-              configStore.data.accounts.push({
-                id: nanoid(),
-                timestamp: Date.now(),
-                username: name,
-                category,
-                uuid,
-                accessToken,
+              app.setData((prev) => {
+                prev.accounts.push({
+                  id: nanoid(),
+                  timestamp: Date.now(),
+                  username: name,
+                  category,
+                  uuid,
+                  accessToken,
+                });
               });
-              saveConfig();
               onBack();
             }
           }}
