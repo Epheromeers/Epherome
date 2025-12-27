@@ -5,17 +5,22 @@ import Center from "../components/Center";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
 import ListItem from "../components/ListItem";
+import type { MinecraftVersion } from "../core/download";
 import { AppContext } from "../store";
 import InstanceDownloaderView from "./InstanceDownloaderView";
 import InstanceEditorView from "./InstanceEditorView";
+import InstanceInstallerView from "./InstanceInstallerView";
 
 export default function InstancesView() {
   const app = useContext(AppContext);
   const data = app.getData();
 
   const current = data.instances.find((i) => i.checked);
+  const [currentVersion, setCurrentVersion] = useState<
+    MinecraftVersion | undefined
+  >();
   const [showing, setShowing] = useState<
-    "list" | "create" | "download" | "edit"
+    "list" | "create" | "download" | "edit" | "install"
   >("list");
 
   return (
@@ -57,8 +62,11 @@ export default function InstancesView() {
         )}
         {showing === "download" && (
           <InstanceDownloaderView
-            onBack={() => {
-              setShowing("list");
+            onBack={(version) => {
+              if (version) {
+                setCurrentVersion(version);
+                setShowing("install");
+              } else setShowing("list");
             }}
           />
         )}
@@ -68,6 +76,12 @@ export default function InstancesView() {
             onBack={() => {
               setShowing("list");
             }}
+          />
+        )}
+        {showing === "install" && currentVersion && (
+          <InstanceInstallerView
+            version={currentVersion}
+            onBack={() => setShowing("list")}
           />
         )}
         {showing === "list" &&

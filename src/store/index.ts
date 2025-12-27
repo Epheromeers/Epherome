@@ -6,6 +6,7 @@ export const errorList: string[] = [];
 export interface DialogOptions {
   title: string;
   message: string;
+  dangerMessage?: string;
   action?: () => void;
   danger?: boolean;
   actionMessage?: string;

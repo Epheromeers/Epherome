@@ -8,7 +8,10 @@ export default function Dialog(props: DialogOptions) {
   return (
     <div className="z-20 flex flex-col min-w-1/5 min-h-1/5 rounded-xl p-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-700">
       <div className="text-lg font-medium">{props.title}</div>
-      <div className="text-sm">{props.message}</div>
+      {props.dangerMessage && (
+        <div className="text-sm text-red-400">{props.dangerMessage}</div>
+      )}
+      <div className="text-sm pb-4">{props.message}</div>
       <div className="grow" />
       <div className="flex justify-end space-x-2">
         {props.action ? (

@@ -4,7 +4,7 @@ import { fetch } from "@tauri-apps/plugin-http";
 
 type MinecraftVersionType = "release" | "snapshot" | "old_alpha" | "old_beta";
 
-interface MinecraftVersion {
+export interface MinecraftVersion {
   id: string;
   type: MinecraftVersionType;
   url: string;

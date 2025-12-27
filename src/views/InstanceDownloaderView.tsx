@@ -1,26 +1,21 @@
-import { ChevronLeft } from "lucide-react";
-import { nanoid } from "nanoid";
-import { useContext, useEffect, useState } from "react";
-import Button from "../components/Button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
 import Checkbox from "../components/Checkbox";
 import IconButton from "../components/IconButton";
-import Input from "../components/Input";
-import {
-  installMinecraft,
-  type MinecraftVersionManifest,
+import type {
+  MinecraftVersion,
+  MinecraftVersionManifest,
 } from "../core/download";
-import { AppContext } from "../store";
 
-export default function InstanceDownloaderView(props: { onBack: () => void }) {
-  const app = useContext(AppContext);
+export default function InstanceDownloaderView(props: {
+  onBack: (version?: MinecraftVersion) => void;
+}) {
   const [versionList, setVersionList] =
     useState<MinecraftVersionManifest | null>(null);
   const [release, setRelease] = useState(true);
   const [snapshot, setSnapshot] = useState(false);
   const [old, setOld] = useState(false);
-  const [gameDirectory, setGameDirectory] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
-  const [started, setStarted] = useState(false);
 
   useEffect(() => {
     fetch("https://piston-meta.mojang.com/mc/game/version_manifest.json")
@@ -28,40 +23,26 @@ export default function InstanceDownloaderView(props: { onBack: () => void }) {
       .then(setVersionList);
   }, []);
 
-  const onInstall = () => {
-    if (selected && versionList && gameDirectory) {
-      const ver = versionList.versions.find((v) => v.id === selected);
-      if (ver) {
-        app.setData((prevData) => {
-          prevData.instances.push({
-            id: nanoid(),
-            timestamp: Date.now(),
-            name: `Minecraft ${ver.id} (Downloaded)`,
-            directory: gameDirectory,
-            version: ver.id,
-            checked: false,
-          });
-        });
-        installMinecraft(ver, gameDirectory)
-          .then(() => props.onBack())
-          .catch((e) =>
-            app.openDialog({
-              title: "Error Occurred",
-              message: `${e}`,
-            }),
-          );
-        setStarted(true);
-      }
-    }
-  };
-
   return (
-    <div className="space-y-2 p-4">
-      <div className="flex space-x-2">
+    <div className="space-y-2 p-2">
+      <div className="flex items-center space-x-2">
         <IconButton onClick={() => props.onBack()}>
-          <ChevronLeft></ChevronLeft>
+          <ChevronLeft />
         </IconButton>
-        <div className="grow" />
+        <div className="font-medium grow">Minecraft Version List</div>
+        <IconButton
+          onClick={() =>
+            props.onBack(
+              versionList?.versions.find((ver) => ver.id === selected),
+            )
+          }
+        >
+          <div className="font-medium mr-2">Next</div>
+          <ChevronRight />
+        </IconButton>
+      </div>
+      <div className="flex items-center space-x-2 px-4">
+        <div className="text-sm font-medium mr-8">Filters</div>
         <Checkbox checked={release} onChange={setRelease}>
           Release
         </Checkbox>
@@ -72,23 +53,7 @@ export default function InstanceDownloaderView(props: { onBack: () => void }) {
           Old
         </Checkbox>
       </div>
-      <div className="flex space-x-3">
-        <Input
-          placeholder="Game Directory (minecraft)"
-          value={gameDirectory}
-          onChange={setGameDirectory}
-        />
-        <div>Version to install: {selected ?? "None"}</div>
-        <Button disabled={started} onClick={onInstall}>
-          Install
-        </Button>
-      </div>
-      <div className="text-sm">
-        Currently, installing a Minecraft version will only save the version
-        JSON file. JAR file and other libraries will be downloaded when
-        launched.
-      </div>
-      <div>
+      <div className="space-y-2">
         {versionList?.versions.map(
           (ver) =>
             ((release && ver.type === "release") ||
@@ -98,10 +63,10 @@ export default function InstanceDownloaderView(props: { onBack: () => void }) {
               <button
                 type="button"
                 key={ver.id}
-                className={`flex space-x-3 ${selected === ver.id && "text-blue-600"}`}
+                className={`flex w-full rounded px-4 py-2 space-x-4 ${selected === ver.id ? "text-blue-600 dark:text-blue-400 bg-gray-200 dark:bg-gray-700" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
                 onClick={() => setSelected(ver.id)}
               >
-                <div>{ver.id}</div>
+                <div className="grow font-medium text-left">{ver.id}</div>
                 <div className="text-gray-500">{ver.type}</div>
               </button>
             ),

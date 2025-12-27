@@ -1,17 +1,20 @@
+import { Check } from "lucide-react";
+
 export default function Checkbox(props: {
   children: React.ReactNode;
   checked: boolean;
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <div className="flex items-center space-x-1">
-      <input
-        type="checkbox"
-        className="w-5 h-5"
-        checked={props.checked}
-        onChange={(e) => props.onChange(e.target.checked)}
-      />
-      <div>{props.children}</div>
-    </div>
+    <button
+      className="flex space-x-1 items-center"
+      type="button"
+      onClick={() => props.onChange(!props.checked)}
+    >
+      <div className="border border-gray-300 dark:border-gray-700 rounded w-4 h-4 flex items-center justify-center">
+        {props.checked && <Check strokeWidth={3} size={12} />}
+      </div>
+      <div className="text-sm font-medium">{props.children}</div>
+    </button>
   );
 }
