@@ -1,7 +1,7 @@
 mod core;
 
-use core::runner::launch_minecraft;
 use core::auth::get_microsoft_auth_code;
+use core::runner::launch_minecraft;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -10,7 +10,10 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![launch_minecraft, get_microsoft_auth_code])
+        .invoke_handler(tauri::generate_handler![
+            launch_minecraft,
+            get_microsoft_auth_code
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
