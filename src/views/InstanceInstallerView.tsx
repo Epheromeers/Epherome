@@ -1,4 +1,5 @@
-import { ChevronLeft } from "lucide-react";
+import { open } from "@tauri-apps/plugin-dialog";
+import { ChevronLeft, FolderSearch } from "lucide-react";
 import { nanoid } from "nanoid";
 import { Fragment, useContext, useState } from "react";
 import Button from "../components/Button";
@@ -53,6 +54,13 @@ export default function InstanceInstallerView(props: {
     }
   };
 
+  const onBrowse = () => {
+    open({
+      directory: true,
+      multiple: false,
+    }).then((value) => setDir(value ?? String()));
+  };
+
   return (
     <div className="p-2">
       <div className="flex items-center space-x-2">
@@ -62,7 +70,7 @@ export default function InstanceInstallerView(props: {
         <div className="font-medium">Install Minecraft {props.version.id}</div>
       </div>
       <div className="p-2 space-y-2">
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
           <Label
             title="Game Directory"
             helper="Usually 'minecraft' on macOS and Linux, '.minecraft' on Windows."
@@ -75,6 +83,10 @@ export default function InstanceInstallerView(props: {
             />
           </Label>
           <div className="grow" />
+          <Button onClick={onBrowse}>
+            <FolderSearch size={16} />
+            <div>Browse</div>
+          </Button>
           <Button disabled={started} onClick={onInstall}>
             Install
           </Button>

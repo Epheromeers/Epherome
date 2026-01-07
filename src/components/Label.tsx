@@ -3,6 +3,7 @@ export default function Label(props: {
   children: React.ReactNode;
   className?: string;
   helper?: string;
+  accentHelper?: string;
 }) {
   return (
     <div>
@@ -13,6 +14,11 @@ export default function Label(props: {
       {props.helper && (
         <div className="text-xs text-gray-500 dark:text-gray-200">
           {props.helper}
+        </div>
+      )}
+      {props.accentHelper && (
+        <div className="text-xs font-medium dark:text-gray-200">
+          {props.accentHelper}
         </div>
       )}
     </div>

@@ -67,6 +67,7 @@
           "url": "http://**"
         }
       ]
-    }
+    },
+    "dialog:default"
   ]
 }

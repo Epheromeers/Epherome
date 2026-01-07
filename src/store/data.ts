@@ -35,6 +35,7 @@ export interface UserData {
   settings: {
     javaPath: string;
     theme: ColorTheme;
+    independentInstance?: boolean;
   };
 }
 
@@ -44,6 +45,7 @@ export const fallbackUserData: UserData = {
   settings: {
     javaPath: "java",
     theme: "system",
+    independentInstance: false,
   },
 };
 

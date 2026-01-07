@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import Checkbox from "../components/Checkbox";
 import IconButton from "../components/IconButton";
+import Spin from "../components/Spin";
 import type {
   MinecraftVersion,
   MinecraftVersionManifest,
@@ -70,7 +71,11 @@ export default function InstanceDownloaderView(props: {
                 <div className="text-gray-500">{ver.type}</div>
               </button>
             ),
-        ) ?? "Loading"}
+        ) ?? (
+          <div className="p-4">
+            <Spin />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { FileDown, FilePlus } from "lucide-react";
+import { FileDown, FilePlus, Pencil } from "lucide-react";
 import { useContext, useState } from "react";
 import Button from "../components/Button";
 import Center from "../components/Center";
@@ -91,7 +91,10 @@ export default function InstancesView() {
               <Label title="Directory">{current.directory}</Label>
               <Label title="Version">{current.version}</Label>
               <div className="flex space-x-2">
-                <Button onClick={() => setShowing("edit")}>Edit</Button>
+                <Button onClick={() => setShowing("edit")}>
+                  <Pencil size={16} />
+                  <div>Edit</div>
+                </Button>
                 <Button
                   onClick={() => {
                     app.openDialog({

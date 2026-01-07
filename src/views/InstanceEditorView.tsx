@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, FolderSearch, ScrollText } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useContext, useState } from "react";
 import Button from "../components/Button";
@@ -7,6 +7,7 @@ import Input from "../components/Input";
 import Label from "../components/Label";
 import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
+import { open } from "@tauri-apps/plugin-dialog";
 
 export default function InstanceEditorView(props: {
   onBack: () => void;
@@ -44,6 +45,13 @@ export default function InstanceEditorView(props: {
     }
   };
 
+  const onBrowse = () => {
+    open({
+      directory: true,
+      multiple: false,
+    }).then((value) => setDirectory(value ?? String()));
+  };
+
   return (
     <div className="p-2">
       <div className="flex items-center space-x-2">
@@ -59,18 +67,29 @@ export default function InstanceEditorView(props: {
         <Label
           title="Directory"
           helper="Usually 'minecraft' on macOS and Linux, '.minecraft' on Windows."
+          className="flex space-x-2"
         >
           <Input
             value={directory}
             placeholder="Directory"
             onChange={setDirectory}
           />
+          <Button onClick={onBrowse}>
+            <FolderSearch size={16} />
+            <div>Browse</div>
+          </Button>
         </Label>
         <Label
           title="Version"
           helper="The name of a folder in the versions directory."
+          accentHelper="Click 'List' to see available versions of the given game directory."
+          className="flex space-x-2"
         >
           <Input value={version} placeholder="Version" onChange={setVersion} />
+          <Button>
+            <ScrollText size={16} />
+            <div>List</div>
+          </Button>
         </Label>
         <div className="py-2">
           <Button onClick={onSave}>Save</Button>

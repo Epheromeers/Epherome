@@ -82,6 +82,31 @@ export default function SettingsView() {
           System
         </RadioButton>
       </Label>
+      <Label
+        title="Instance Page Style"
+        helper="This option will not have actual effects currently."
+      >
+        <RadioButton
+          checked={data.settings.independentInstance}
+          onClick={() => {
+            app.setData((prev) => {
+              prev.settings.independentInstance = true;
+            });
+          }}
+        >
+          Keep Instances Independent
+        </RadioButton>
+        <RadioButton
+          checked={!data.settings.independentInstance}
+          onClick={() => {
+            app.setData((prev) => {
+              prev.settings.independentInstance = false;
+            });
+          }}
+        >
+          Put Instances with the Same Game Directory Together
+        </RadioButton>
+      </Label>
       <Label title="App Version">{meta.appVersion}</Label>
       <Label title="App Data Directory">{meta.appDir}</Label>
       <Label title="OS">
