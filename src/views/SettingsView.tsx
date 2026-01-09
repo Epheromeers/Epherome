@@ -1,5 +1,6 @@
 import { app, path } from "@tauri-apps/api";
 import { arch, platform, version } from "@tauri-apps/plugin-os";
+import { Save } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
@@ -47,7 +48,8 @@ export default function SettingsView() {
             })
           }
         >
-          Save
+          <Save size={16} />
+          <div>Save</div>
         </Button>
       </Label>
       <Label title="Color Theme">

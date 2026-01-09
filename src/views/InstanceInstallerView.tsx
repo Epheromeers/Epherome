@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import Input from "../components/Input";
 import Label from "../components/Label";
+import Spin from "../components/Spin";
 import { installMinecraft, type MinecraftVersion } from "../core/download";
 import { AppContext } from "../store";
 
@@ -70,19 +71,18 @@ export default function InstanceInstallerView(props: {
         <div className="font-medium">Install Minecraft {props.version.id}</div>
       </div>
       <div className="p-2 space-y-2">
+        <Label
+          title="Game Directory"
+          helper="Usually 'minecraft' on macOS and Linux, '.minecraft' on Windows."
+        >
+          <Input
+            className="w-full"
+            value={dir}
+            onChange={setDir}
+            placeholder="Game Directory"
+          />
+        </Label>
         <div className="flex items-center space-x-2">
-          <Label
-            title="Game Directory"
-            helper="Usually 'minecraft' on macOS and Linux, '.minecraft' on Windows."
-          >
-            <Input
-              className="w-full"
-              value={dir}
-              onChange={setDir}
-              placeholder="Game Directory"
-            />
-          </Label>
-          <div className="grow" />
           <Button onClick={onBrowse}>
             <FolderSearch size={16} />
             <div>Browse</div>
@@ -90,6 +90,7 @@ export default function InstanceInstallerView(props: {
           <Button disabled={started} onClick={onInstall}>
             Install
           </Button>
+          {started && <Spin />}
         </div>
         <div className="border border-t border-gray-300 dark:border-gray-700" />
         <div className="space-y-2 text-sm">

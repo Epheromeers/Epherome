@@ -1,4 +1,5 @@
-import { ChevronLeft, FolderSearch, ScrollText } from "lucide-react";
+import { open } from "@tauri-apps/plugin-dialog";
+import { ChevronLeft, FolderSearch, Save, ScrollText } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useContext, useState } from "react";
 import Button from "../components/Button";
@@ -7,7 +8,6 @@ import Input from "../components/Input";
 import Label from "../components/Label";
 import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
-import { open } from "@tauri-apps/plugin-dialog";
 
 export default function InstanceEditorView(props: {
   onBack: () => void;
@@ -92,7 +92,10 @@ export default function InstanceEditorView(props: {
           </Button>
         </Label>
         <div className="py-2">
-          <Button onClick={onSave}>Save</Button>
+          <Button onClick={onSave}>
+            <Save size={16} />
+            <div>Save</div>
+          </Button>
         </div>
       </div>
     </div>

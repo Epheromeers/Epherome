@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Save, ScanFace } from "lucide-react";
 import { nanoid } from "nanoid";
 import { Fragment, useContext, useState } from "react";
 import Button from "../components/Button";
@@ -6,6 +6,7 @@ import IconButton from "../components/IconButton";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import RadioButton from "../components/RadioButton";
+import Spin from "../components/Spin";
 import {
   getAuthCode,
   getAuthToken,
@@ -98,9 +99,16 @@ export default function AccountEditorView(props: { onBack: () => void }) {
         </div>
         <div className="p-2">
           {category === "microsoft" ? (
-            <Button disabled={authenticating} onClick={onMicrosoftAuthenticate}>
-              Authenticate
-            </Button>
+            <div className="flex space-x-2 items-center">
+              <Button
+                disabled={authenticating}
+                onClick={onMicrosoftAuthenticate}
+              >
+                <ScanFace size={16} />
+                <div>Authenticate</div>
+              </Button>
+              {authenticating && <Spin />}
+            </div>
           ) : (
             <div className="space-y-2">
               <Label title="Username">
@@ -139,7 +147,8 @@ export default function AccountEditorView(props: { onBack: () => void }) {
                     }
                   }}
                 >
-                  Save
+                  <Save size={16} />
+                  <div>Save</div>
                 </Button>
               </div>
             </div>

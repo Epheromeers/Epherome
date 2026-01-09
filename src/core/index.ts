@@ -199,6 +199,7 @@ export async function launchMinecraft(
       javaPath: app.getData().settings.javaPath ?? "java",
       cwd: instance.directory,
       args: launchCommand,
+      nanoid: instance.id,
     });
   } catch (e) {
     app.openDialog({

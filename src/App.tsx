@@ -1,9 +1,9 @@
 import {
-  Braces,
   CircleUser,
   Cog,
   Grid2X2Check,
   LayoutDashboard,
+  SquareActivity,
 } from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import Dialog from "./components/Dialog";
@@ -13,9 +13,9 @@ import { type UserData, writeUserData } from "./store/data";
 import { updateTheme } from "./store/theme";
 import AccountsView from "./views/AccountsView";
 import DashboardView from "./views/DashboardView";
-import ErrorView from "./views/ErrorView";
 import InstancesView from "./views/InstancesView";
 import SettingsView from "./views/SettingsView";
+import TaskManagerView from "./views/TaskManagerView";
 
 export default function App(props: { userData: UserData }) {
   const [view, setView] = useState("dashboard");
@@ -29,7 +29,7 @@ export default function App(props: { userData: UserData }) {
         ["accounts", AccountsView, CircleUser],
         ["instances", InstancesView, Grid2X2Check],
         ["settings", SettingsView, Cog],
-        ["error", ErrorView, Braces],
+        ["tasks", TaskManagerView, SquareActivity],
       ] as [string, React.ComponentType, React.ComponentType?][],
     [],
   );
