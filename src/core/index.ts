@@ -1,6 +1,7 @@
 import { path } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
+import { delimiter } from "@tauri-apps/api/path";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import type { AppContextType } from "../store";
 import type { MinecraftAccount, MinecraftInstance } from "../store/data";
@@ -187,7 +188,7 @@ export async function launchMinecraft(
     ),
     launcher_name: "Epherome",
     launcher_version: await getVersion(),
-    classpath: classpath.join(":"),
+    classpath: classpath.join(delimiter()),
   });
 
   const launchCommand = [...jvmArgs, jsonObject.mainClass, ...gameArgs];
