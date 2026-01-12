@@ -4,6 +4,7 @@ import Label from "../components/Label";
 import { launchMinecraft } from "../core";
 import type { ParallelTask } from "../core/parallel";
 import { AppContext } from "../store";
+import Link from "../components/Link";
 
 export default function DashboardView() {
   const app = useContext(AppContext);
@@ -16,6 +17,22 @@ export default function DashboardView() {
 
   return (
     <div className="flex flex-col h-full p-6">
+      <div className="rounded border border-gray-300 dark:border-gray-700 p-2 text-sm">
+        <div>
+          Welcome to Epherome! It is very unstable and incomplete currently,
+          with many potential bugs.
+        </div>
+        <div className="flex items-center space-x-2">
+          <div>User guides will be available on:</div>
+          <Link target="https://epherome.com">https://epherome.com</Link>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div>Open source at:</div>
+          <Link target="https://github.com/Epheromeers/Epherome">
+            https://github.com/Epheromeers/Epherome
+          </Link>
+        </div>
+      </div>
       {downloadList.map((item) => (
         <div key={item.id}>Downloading {item.name}...</div>
       ))}
