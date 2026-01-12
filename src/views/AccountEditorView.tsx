@@ -21,7 +21,7 @@ import type { MinecraftAccount, MinecraftAccountCategory } from "../store/data";
 async function createMicrosoftAccount(): Promise<MinecraftAccount> {
   const authCode = await getAuthCode();
   const authToken = await getAuthToken(authCode);
-  const { xblToken, userHash } = await getXBLToken(authToken);
+  const { xblToken, xblNotAfter, userHash } = await getXBLToken(authToken);
   const xstsToken = await getXSTSToken(xblToken);
   const mcToken = await getMinecraftToken(userHash, xstsToken);
   const { id, name } = await getMinecraftProfile(mcToken);
@@ -31,6 +31,9 @@ async function createMicrosoftAccount(): Promise<MinecraftAccount> {
     username: name,
     category: "microsoft",
     uuid: id,
+    xblToken,
+    xblNotAfter,
+    userHash,
     accessToken: mcToken,
   };
 }

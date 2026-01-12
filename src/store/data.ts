@@ -16,6 +16,9 @@ export interface MinecraftAccount {
   username: string;
   category: MinecraftAccountCategory;
   uuid?: string;
+  xblToken?: string;
+  xblNotAfter?: string;
+  userHash?: string;
   accessToken?: string;
   checked?: boolean;
 }

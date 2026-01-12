@@ -10,6 +10,7 @@ import {
   parseClientJsonArguments,
 } from "./arguments";
 import { checkAssets } from "./assets";
+import { refreshMicrosoftAccount } from "./auth";
 import {
   type ClientJsonLibrary,
   checkLibraries,
@@ -46,6 +47,27 @@ export async function launchMinecraft(
   setDownloadList: (list: ParallelTask[]) => void,
 ) {
   setMessage("Preparing to launch");
+
+  // Check account availability
+  if (account.category === "microsoft") {
+    const tokenPayload = JSON.parse(
+      atob(account.accessToken?.split(".")[1] ?? ""),
+    );
+    if (new Date(tokenPayload.exp * 1000) < new Date()) {
+      const refreshed = await refreshMicrosoftAccount(account);
+      if (refreshed) {
+        app.setData((data) => {
+          const formerAccount = data.accounts.find(
+            (acc) => acc.id === account.id,
+          );
+          if (formerAccount) {
+            formerAccount.accessToken = refreshed;
+          }
+        });
+        account.accessToken = refreshed;
+      }
+    }
+  }
 
   const jsonPath = await path.join(
     instance.directory,

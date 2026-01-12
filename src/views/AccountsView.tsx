@@ -1,5 +1,5 @@
-import { Plus } from "lucide-react";
-import { useContext, useState } from "react";
+import { CheckCircle, OctagonX, Plus } from "lucide-react";
+import { Fragment, useContext, useState } from "react";
 import Button from "../components/Button";
 import Center from "../components/Center";
 import IconButton from "../components/IconButton";
@@ -23,8 +23,17 @@ export default function AccountsView() {
 
   const current = data.accounts.find((account) => account.checked);
   const [showing, setShowing] = useState<"list" | "create">("list");
+  const [notAfter, setNotAfter] = useState<[string, Date | null] | undefined>();
 
   const onBackToList = () => setShowing("list");
+
+  const onCheckAvailability = () => {
+    if (current) {
+      if (current?.userHash && current?.xblToken && current?.xblNotAfter) {
+        setNotAfter([current.id, new Date(current.xblNotAfter)]);
+      } else setNotAfter([current.id, null]);
+    }
+  };
 
   return (
     <div className="flex h-full">
@@ -64,6 +73,34 @@ export default function AccountsView() {
               <Label title="Created at">
                 {new Date(current.timestamp).toLocaleString()}
               </Label>
+              {current.category === "microsoft" && (
+                <div className="flex items-center space-x-4 text-sm">
+                  <Button onClick={onCheckAvailability}>
+                    Check availability
+                  </Button>
+                  {notAfter?.[0] === current.id && (
+                    <Fragment>
+                      {notAfter[1] === null && (
+                        <div>Unable to check availability.</div>
+                      )}
+                      {notAfter[1] &&
+                        (notAfter[1] > new Date() ? (
+                          <div className="flex items-center space-x-2">
+                            <CheckCircle size={16} />
+                            <div>Your token is available until</div>
+                            <div>{notAfter[1].toLocaleString()}</div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <OctagonX size={16} />
+                            <div>Your token has expired at</div>
+                            <div>{notAfter[1].toLocaleString()}</div>
+                          </div>
+                        ))}
+                    </Fragment>
+                  )}
+                </div>
+              )}
               <Button
                 onClick={() => {
                   app.openDialog({

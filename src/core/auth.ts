@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { fetch } from "@tauri-apps/plugin-http";
+import type { MinecraftAccount } from "../store/data";
 
 export async function getAuthCode(): Promise<string> {
   invoke("get_microsoft_auth_code");
@@ -52,8 +53,9 @@ export async function getXBLToken(authToken: string) {
   );
   const responseJson = await response.json();
   const xblToken = responseJson.Token;
+  const xblNotAfter = responseJson.NotAfter;
   const userHash = responseJson.DisplayClaims.xui[0].uhs;
-  return { xblToken, userHash };
+  return { xblToken, xblNotAfter, userHash };
 }
 
 export async function getXSTSToken(xblToken: string) {
@@ -80,7 +82,10 @@ export async function getXSTSToken(xblToken: string) {
   return xstsToken;
 }
 
-export async function getMinecraftToken(userHash: string, xstsToken: string) {
+export async function getMinecraftToken(
+  userHash: string,
+  xstsToken: string,
+): Promise<string> {
   const response = await fetch(
     "https://api.minecraftservices.com/authentication/login_with_xbox",
     {
@@ -110,4 +115,17 @@ export async function getMinecraftProfile(minecraftToken: string) {
   );
   const responseJson = await response.json();
   return { id: responseJson.id, name: responseJson.name };
+}
+
+export async function refreshMicrosoftAccount(account: MinecraftAccount) {
+  if (account.userHash && account.xblToken && account.xblNotAfter) {
+    if (new Date(account.xblNotAfter) > new Date()) {
+      const xstsToken = await getXSTSToken(account.xblToken);
+      const minecraftToken = await getMinecraftToken(
+        account.userHash,
+        xstsToken,
+      );
+      return minecraftToken;
+    }
+  }
 }
