@@ -1,10 +1,10 @@
 import { useContext, useState } from "react";
 import Button from "../components/Button";
 import Label from "../components/Label";
+import Link from "../components/Link";
 import { launchMinecraft } from "../core";
 import type { ParallelTask } from "../core/parallel";
 import { AppContext } from "../store";
-import Link from "../components/Link";
 
 export default function DashboardView() {
   const app = useContext(AppContext);
