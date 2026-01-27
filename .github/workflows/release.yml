@@ -14,34 +14,26 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-15-intel'
-            name: 'macOS Intel'
-            args: '--target x86_64-apple-darwin'
-            
           - platform: 'macos-latest'
             name: 'macOS Apple Silicon'
             args: '--target aarch64-apple-darwin'
-
+            rust_target: 'aarch64-apple-darwin'
+          - platform: 'macos-15-intel'
+            name: 'macOS Intel'
+            args: '--target x86_64-apple-darwin'
+            rust_target: 'x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
             name: 'Linux x64'
             args: ''
-            
           - platform: 'ubuntu-22.04-arm'
-            name: 'Linux ARM64'
+            name: 'Linux arm64'
             args: ''
-
-          - platform: 'windows-11-arm'
-            name: 'Windows ARM64'
-            args: '' 
-
           - platform: 'windows-latest'
             name: 'Windows x64'
             args: '' 
-
-          - platform: 'windows-latest'
-            name: 'Windows x86'
-            args: '--target i686-pc-windows-msvc'
-            rust_target: 'i686-pc-windows-msvc'
+          - platform: 'windows-11-arm'
+            name: 'Windows arm64'
+            args: '' 
 
     runs-on: ${{ matrix.platform }}
 
@@ -67,7 +59,7 @@ jobs:
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.rust_target }}
+          targets: ${{ matrix.rust_target || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -88,7 +80,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: __VERSION__
+          tagName: v__VERSION__
           releaseName: "Epherome v__VERSION__"
           releaseBody: "See the assets to download and install this version."
           releaseDraft: true
