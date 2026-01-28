@@ -1,6 +1,7 @@
 export default function Input(props: {
   placeholder?: string;
   value?: string;
+  defaultValue?: string;
   password?: boolean;
   onChange?: (value: string) => void;
   onFocus?: () => void;
@@ -11,6 +12,7 @@ export default function Input(props: {
     <input
       placeholder={props.placeholder}
       value={props.value}
+      defaultValue={props.defaultValue}
       type={props.password ? "password" : "text"}
       onChange={(e) => props.onChange?.(e.target.value)}
       onFocus={props.onFocus}

@@ -48,6 +48,14 @@
       ]
     },
     {
+      "identifier": "fs:allow-write-text-file",
+      "allow": [
+        {
+          "path": "**/*"
+        }
+      ]
+    },
+    {
       "identifier": "fs:allow-app-write",
       "allow": [
         {

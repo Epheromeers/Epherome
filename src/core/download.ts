@@ -1,6 +1,14 @@
 import { path } from "@tauri-apps/api";
-import { exists, mkdir, readFile, writeFile } from "@tauri-apps/plugin-fs";
+import {
+  exists,
+  mkdir,
+  readFile,
+  readTextFile,
+  writeFile,
+  writeTextFile,
+} from "@tauri-apps/plugin-fs";
 import { fetch } from "@tauri-apps/plugin-http";
+import type { MinecraftInstance } from "../store/data";
 
 type MinecraftVersionType = "release" | "snapshot" | "old_alpha" | "old_beta";
 
@@ -53,4 +61,48 @@ export async function checkHash(
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
   return computedHash === hash;
+}
+
+export async function prepareToInstallModLoader(instance: MinecraftInstance) {
+  const jsonPath = await path.join(
+    instance.directory,
+    "versions",
+    instance.version,
+    `${instance.version}.json`,
+  );
+  const jsonText = await readTextFile(jsonPath);
+  const jsonObject = JSON.parse(jsonText);
+
+  if (jsonObject.inheritsFrom) {
+    throw new Error("Mod loader already installed.");
+  }
+
+  return {
+    gameVersion: jsonObject.id,
+  };
+}
+
+export async function installFabric(
+  instance: MinecraftInstance,
+  gameVersion: string,
+  loaderVersion: string,
+) {
+  const response = await fetch(
+    `https://meta.fabricmc.net/v2/versions/loader/${gameVersion}/${loaderVersion}/profile/json`,
+  );
+  const json = await response.json();
+  const moddedId = json.id;
+  const jsonPath = await path.join(
+    instance.directory,
+    "versions",
+    moddedId,
+    `${moddedId}.json`,
+  );
+  const versionDir = await path.dirname(jsonPath);
+  if (await exists(versionDir)) {
+    throw new Error(`Modded version id ${moddedId} already exists.`);
+  }
+  await mkdir(versionDir, { recursive: true });
+  await writeTextFile(jsonPath, JSON.stringify(json));
+  return moddedId;
 }
