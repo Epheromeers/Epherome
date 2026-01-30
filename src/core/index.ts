@@ -2,9 +2,9 @@ import { path } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { delimiter } from "@tauri-apps/api/path";
-import { readTextFile } from "@tauri-apps/plugin-fs";
 import type { AppContextType } from "../store";
 import type { MinecraftAccount, MinecraftInstance } from "../store/data";
+import { readTextFile } from "../utils/fs";
 import {
   type ClientJsonArguments,
   parseClientJsonArguments,

@@ -1,6 +1,5 @@
 import { path } from "@tauri-apps/api";
 import { open } from "@tauri-apps/plugin-dialog";
-import { exists, readDir } from "@tauri-apps/plugin-fs";
 import {
   ChevronLeft,
   ChevronUp,
@@ -16,6 +15,7 @@ import Input from "../components/Input";
 import Label from "../components/Label";
 import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
+import { exists, readDir } from "../utils/fs";
 
 export default function InstanceEditorView(props: {
   onBack: () => void;
@@ -66,11 +66,7 @@ export default function InstanceEditorView(props: {
       const versionDirectory = await path.join(directory, "versions");
       if (await exists(versionDirectory)) {
         const entries = await readDir(versionDirectory);
-        const versionNames: string[] = [];
-        for (const entry of entries) {
-          entry.isDirectory && versionNames.push(entry.name);
-        }
-        setVersionList(versionNames);
+        setVersionList(entries);
         setShowDropdown(true);
       } else {
         app.openDialog({

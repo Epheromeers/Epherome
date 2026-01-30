@@ -1,10 +1,5 @@
 import { path } from "@tauri-apps/api";
-import {
-  exists,
-  mkdir,
-  readTextFile,
-  writeTextFile,
-} from "@tauri-apps/plugin-fs";
+import { exists, mkdir, readTextFile, writeTextFile } from "../utils/fs";
 
 export type MinecraftAccountCategory = "microsoft" | "custom" | "offline";
 

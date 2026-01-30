@@ -1,6 +1,6 @@
 import { path } from "@tauri-apps/api";
-import { exists, readTextFile } from "@tauri-apps/plugin-fs";
 import type { MinecraftInstance } from "../store/data";
+import { exists, readTextFile } from "../utils/fs";
 import type { MinecraftClientJson } from ".";
 import { checkHash, downloadFile } from "./download";
 

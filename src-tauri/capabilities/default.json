@@ -6,63 +6,6 @@
   "permissions": [
     "core:default",
     "opener:default",
-    "fs:default",
-    {
-      "identifier": "fs:allow-exists",
-      "allow": [
-        {
-          "path": "**/*"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-read-file",
-      "allow": [
-        {
-          "path": "**/*"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-read-text-file",
-      "allow": [
-        {
-          "path": "**/*"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-mkdir",
-      "allow": [
-        {
-          "path": "**/*"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-write-file",
-      "allow": [
-        {
-          "path": "**/*"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-write-text-file",
-      "allow": [
-        {
-          "path": "**/*"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-app-write",
-      "allow": [
-        {
-          "path": "$APPDATA/*"
-        }
-      ]
-    },
     "os:default",
     "http:default",
     {

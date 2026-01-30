@@ -1,4 +1,6 @@
 import { path } from "@tauri-apps/api";
+import { fetch } from "@tauri-apps/plugin-http";
+import type { MinecraftInstance } from "../store/data";
 import {
   exists,
   mkdir,
@@ -6,9 +8,7 @@ import {
   readTextFile,
   writeFile,
   writeTextFile,
-} from "@tauri-apps/plugin-fs";
-import { fetch } from "@tauri-apps/plugin-http";
-import type { MinecraftInstance } from "../store/data";
+} from "../utils/fs";
 
 type MinecraftVersionType = "release" | "snapshot" | "old_alpha" | "old_beta";
 
@@ -34,7 +34,7 @@ export async function downloadFile(
 ): Promise<void> {
   const result = await fetch(url, { method: "GET" });
   const resultBytes = await result.bytes();
-  await mkdir(await path.dirname(destination), { recursive: true });
+  await mkdir(await path.dirname(destination));
   await writeFile(destination, resultBytes);
 }
 
@@ -43,7 +43,7 @@ export async function installMinecraft(ver: MinecraftVersion, gameDir: string) {
     throw new Error(`Game directory ${gameDir} does not exist.`);
   }
   const versionDir = await path.join(gameDir, "versions", ver.id);
-  await mkdir(versionDir, { recursive: true });
+  await mkdir(versionDir);
   const versionJsonPath = await path.join(versionDir, `${ver.id}.json`);
 
   // Download version JSON
@@ -55,7 +55,10 @@ export async function checkHash(
   hash: string,
 ): Promise<boolean> {
   const buffer = await readFile(filePath);
-  const hashBuffer = await crypto.subtle.digest("SHA-1", buffer);
+  const hashBuffer = await crypto.subtle.digest(
+    "SHA-1",
+    buffer.buffer as ArrayBuffer,
+  );
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const computedHash = hashArray
     .map((b) => b.toString(16).padStart(2, "0"))
@@ -102,7 +105,7 @@ export async function installFabric(
   if (await exists(versionDir)) {
     throw new Error(`Modded version id ${moddedId} already exists.`);
   }
-  await mkdir(versionDir, { recursive: true });
+  await mkdir(versionDir);
   await writeTextFile(jsonPath, JSON.stringify(json));
   return moddedId;
 }
