@@ -25,15 +25,15 @@ jobs:
           - platform: 'ubuntu-22.04'
             name: 'Linux x64'
             args: ''
-          - platform: 'ubuntu-22.04-arm'
-            name: 'Linux arm64'
-            args: ''
+#         - platform: 'ubuntu-22.04-arm'
+#           name: 'Linux arm64'
+#           args: ''
           - platform: 'windows-latest'
             name: 'Windows x64'
             args: '' 
-          - platform: 'windows-11-arm'
-            name: 'Windows arm64'
-            args: '' 
+#         - platform: 'windows-11-arm'
+#           name: 'Windows arm64'
+#           args: '' 
 
     runs-on: ${{ matrix.platform }}
 
