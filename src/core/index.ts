@@ -219,7 +219,9 @@ export async function launchMinecraft(
 
   try {
     await invoke("launch_minecraft", {
-      javaPath: app.getData().settings.javaPath ?? "java",
+      javaPath:
+        app.getData().settings.javaRuntimes?.find((rt) => rt.checked)
+          ?.pathname ?? "java",
       cwd: instance.directory,
       args: launchCommand,
       nanoid: instance.id,

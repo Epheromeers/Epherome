@@ -32,11 +32,19 @@ export interface MinecraftInstance {
   checked?: boolean;
 }
 
+export interface JavaRuntime {
+  id: string;
+  nickname?: string;
+  pathname: string;
+  version?: string;
+  checked?: boolean;
+}
+
 export interface UserData {
   accounts: MinecraftAccount[];
   instances: MinecraftInstance[];
   settings: {
-    javaPath: string;
+    javaRuntimes?: JavaRuntime[];
     theme: ColorTheme;
     independentInstance?: boolean;
   };
@@ -46,7 +54,7 @@ export const fallbackUserData: UserData = {
   accounts: [],
   instances: [],
   settings: {
-    javaPath: "java",
+    javaRuntimes: [],
     theme: "system",
     independentInstance: false,
   },
