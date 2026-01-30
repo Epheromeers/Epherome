@@ -1,9 +1,11 @@
 import { path } from "@tauri-apps/api";
 import { open } from "@tauri-apps/plugin-dialog";
+import { platform } from "@tauri-apps/plugin-os";
 import {
   ChevronLeft,
   ChevronUp,
   FolderSearch,
+  FolderSync,
   Save,
   ScrollText,
 } from "lucide-react";
@@ -15,6 +17,7 @@ import Input from "../components/Input";
 import Label from "../components/Label";
 import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
+import { applyIgnore } from "../utils";
 import { exists, readDir } from "../utils/fs";
 
 export default function InstanceEditorView(props: {
@@ -66,7 +69,14 @@ export default function InstanceEditorView(props: {
       const versionDirectory = await path.join(directory, "versions");
       if (await exists(versionDirectory)) {
         const entries = await readDir(versionDirectory);
-        setVersionList(entries);
+        setVersionList(
+          applyIgnore(entries, [
+            ".DS_Store",
+            "version_manifest.json",
+            "version_manifest_v2.json",
+            "jre_manifest.json",
+          ]),
+        );
         setShowDropdown(true);
       } else {
         app.openDialog({
@@ -103,7 +113,8 @@ export default function InstanceEditorView(props: {
         </Label>
         <Label
           title="Directory"
-          helper="Usually 'minecraft' on macOS and Linux, '.minecraft' on Windows."
+          helper="Usually 'minecraft' on macOS, '.minecraft' on Windows and Linux."
+          accentHelper="Click 'Default' to fill in the default game directory for your platform."
           className="flex space-x-2"
         >
           <Input
@@ -114,6 +125,27 @@ export default function InstanceEditorView(props: {
           <Button onClick={onBrowse}>
             <FolderSearch size={16} />
             <div>Browse</div>
+          </Button>
+          <Button
+            onClick={() => {
+              const platformName = platform();
+              path.homeDir().then((home) => {
+                if (platformName === "macos") {
+                  path
+                    .join(home, "Library", "Application Support", "minecraft")
+                    .then(setDirectory);
+                } else if (platformName === "linux") {
+                  path.join(home, ".minecraft").then(setDirectory);
+                } else if (platformName === "windows") {
+                  path
+                    .join(home, "AppData", "Roaming", ".minecraft")
+                    .then(setDirectory);
+                }
+              });
+            }}
+          >
+            <FolderSync size={16} />
+            <div>Default</div>
           </Button>
         </Label>
         <Label
