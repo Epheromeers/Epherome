@@ -1,5 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
 
+export interface DirEntry {
+  name: string;
+  isDirectory: boolean;
+  isFile: boolean;
+}
+
 export async function readTextFile(pathname: string): Promise<string> {
   return await invoke("read_text_file", { pathname });
 }
@@ -19,7 +25,7 @@ export async function mkdir(pathname: string): Promise<void> {
   return await invoke("mkdir", { pathname });
 }
 
-export async function readDir(pathname: string): Promise<string[]> {
+export async function readDir(pathname: string): Promise<DirEntry[]> {
   return await invoke("read_dir", { pathname });
 }
 

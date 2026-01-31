@@ -17,7 +17,6 @@ import Input from "../components/Input";
 import Label from "../components/Label";
 import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
-import { applyIgnore } from "../utils";
 import { exists, readDir } from "../utils/fs";
 
 export default function InstanceEditorView(props: {
@@ -70,12 +69,9 @@ export default function InstanceEditorView(props: {
       if (await exists(versionDirectory)) {
         const entries = await readDir(versionDirectory);
         setVersionList(
-          applyIgnore(entries, [
-            ".DS_Store",
-            "version_manifest.json",
-            "version_manifest_v2.json",
-            "jre_manifest.json",
-          ]),
+          entries
+            .filter((entry) => entry.isDirectory)
+            .map((entry) => entry.name),
         );
         setShowDropdown(true);
       } else {

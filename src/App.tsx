@@ -17,7 +17,13 @@ import InstancesView from "./views/InstancesView";
 import SettingsView from "./views/SettingsView";
 import TaskManagerView from "./views/TaskManagerView";
 
-export default function App(props: { userData: UserData }) {
+const noJreDialog: DialogOptions = {
+  title: "No Java Runtimes Detected",
+  message:
+    "Please install a Java Runtime if you haven't, and add it in the settings.",
+};
+
+export default function App(props: { userData: UserData; noJres: boolean }) {
   const [view, setView] = useState("dashboard");
   const [launchMessage, setLaunchMessage] = useState<string | undefined>(
     undefined,
@@ -33,7 +39,9 @@ export default function App(props: { userData: UserData }) {
       ] as [string, React.ComponentType, React.ComponentType?][],
     [],
   );
-  const [dialog, setDialog] = useState<DialogOptions | null>(null);
+  const [dialog, setDialog] = useState<DialogOptions | null>(
+    props.noJres ? noJreDialog : null,
+  );
   const [data, setData] = useState<UserData>(props.userData);
 
   useEffect(() => {

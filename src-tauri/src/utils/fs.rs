@@ -1,5 +1,15 @@
+use serde::Serialize;
 use std::fs;
 use std::path::Path;
+
+/// Information about a directory entry
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DirEntry {
+    pub name: String,
+    pub is_directory: bool,
+    pub is_file: bool,
+}
 
 /// Read the contents of a text file
 #[tauri::command]
@@ -25,9 +35,9 @@ pub fn mkdir(pathname: String) -> Result<(), String> {
     fs::create_dir_all(&pathname).map_err(|e| format!("Failed to create directory: {}", e))
 }
 
-/// Read directory contents and return list of file/folder names
+/// Read directory contents and return detailed information about each entry
 #[tauri::command]
-pub fn read_dir(pathname: String) -> Result<Vec<String>, String> {
+pub fn read_dir(pathname: String) -> Result<Vec<DirEntry>, String> {
     let entries =
         fs::read_dir(&pathname).map_err(|e| format!("Failed to read directory: {}", e))?;
 
@@ -35,7 +45,15 @@ pub fn read_dir(pathname: String) -> Result<Vec<String>, String> {
     for entry in entries {
         let entry = entry.map_err(|e| format!("Failed to read entry: {}", e))?;
         if let Some(name) = entry.file_name().to_str() {
-            result.push(name.to_string());
+            let metadata = entry
+                .metadata()
+                .map_err(|e| format!("Failed to read metadata: {}", e))?;
+
+            result.push(DirEntry {
+                name: name.to_string(),
+                is_directory: metadata.is_dir(),
+                is_file: metadata.is_file(),
+            });
         }
     }
 
