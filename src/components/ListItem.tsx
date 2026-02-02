@@ -6,7 +6,7 @@ export default function ListItem(props: {
   return (
     <button
       type="button"
-      className={`block py-1 px-3 text-sm font-medium w-full rounded text-left ${props.checked ? "bg-gray-100 dark:bg-gray-700" : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"}`}
+      className={`flex space-x-1 items-center py-1 px-3 text-sm font-medium w-full rounded text-left ${props.checked ? "bg-gray-100 dark:bg-gray-700" : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"}`}
       onClick={props.onClick}
     >
       {props.children}

@@ -5,6 +5,7 @@ import Center from "../components/Center";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
 import ListItem from "../components/ListItem";
+import { getSkin } from "../core/skin";
 import { AppContext } from "../store";
 import type { MinecraftAccountCategory } from "../store/data";
 import AccountEditorView from "./AccountEditorView";
@@ -24,6 +25,7 @@ export default function AccountsView() {
   const current = data.accounts.find((account) => account.checked);
   const [showing, setShowing] = useState<"list" | "create">("list");
   const [notAfter, setNotAfter] = useState<[string, Date | null] | undefined>();
+  const [skin, setSkin] = useState<string | null>(null);
 
   const onBackToList = () => setShowing("list");
 
@@ -57,7 +59,14 @@ export default function AccountsView() {
               });
             }}
           >
-            {account.username}
+            {account.category === "microsoft" && (
+              <img
+                width={24}
+                src={`https://minotar.net/avatar/${account.uuid}`}
+                alt="avatar"
+              />
+            )}
+            <div>{account.username}</div>
           </ListItem>
         ))}
       </div>
@@ -121,6 +130,18 @@ export default function AccountsView() {
               >
                 Delete
               </Button>
+              {current.category === "microsoft" && (
+                <Label title="Skin Viewer">
+                  <Button
+                    onClick={() => {
+                      getSkin(current).then(setSkin);
+                    }}
+                  >
+                    View Skin
+                  </Button>
+                  {skin && <img src={skin} alt="Skin" />}
+                </Label>
+              )}
             </div>
           ) : (
             <Center className="h-full">
