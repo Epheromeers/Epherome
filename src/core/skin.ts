@@ -1,11 +1,11 @@
-import { fetch } from "@tauri-apps/plugin-http";
 import type { MinecraftAccount } from "../store/data";
+import { fetch } from "../utils/http";
 
 export async function getSkin(account: MinecraftAccount): Promise<string> {
   const resp = await fetch(
     `https://sessionserver.mojang.com/session/minecraft/profile/${account.uuid}`,
   );
-  const data = await resp.json();
+  const data = JSON.parse(resp.text || "{}");
   const skin = data.properties.find(
     (property: { name: string; value: string }) => property.name === "textures",
   ).value;

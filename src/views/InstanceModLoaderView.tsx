@@ -1,4 +1,3 @@
-import { fetch } from "@tauri-apps/plugin-http";
 import { ChevronLeft } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useContext, useEffect, useState } from "react";
@@ -11,6 +10,7 @@ import Spin from "../components/Spin";
 import { installFabric, prepareToInstallModLoader } from "../core/download";
 import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
+import { fetch } from "../utils/http";
 
 export function InstanceModLoaderView(props: {
   current: MinecraftInstance;
@@ -43,15 +43,14 @@ export function InstanceModLoaderView(props: {
     setModLoader(loader);
     setStep(1);
     if (loader === "fabric") {
-      fetch(`https://meta.fabricmc.net/v2/versions/loader/${gameVersion}`)
-        .then((resp) => resp.json())
-        .then((data) =>
+      fetch(`https://meta.fabricmc.net/v2/versions/loader/${gameVersion}`).then(
+        (resp) =>
           setModLoaderVersions(
-            data.map(
+            JSON.parse(resp.text || "[]").map(
               (obj: { loader: { version: string } }) => obj.loader.version,
             ),
           ),
-        );
+      );
     }
   };
 

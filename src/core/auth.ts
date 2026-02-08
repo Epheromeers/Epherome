@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { fetch } from "@tauri-apps/plugin-http";
 import type { MinecraftAccount } from "../store/data";
+import { fetch } from "../utils/http";
 
 export async function getAuthCode(): Promise<string> {
   invoke("get_microsoft_auth_code");
@@ -25,9 +25,9 @@ export async function getAuthToken(authCode: string): Promise<string> {
       grant_type: "authorization_code",
       redirect_uri: "https://login.live.com/oauth20_desktop.srf",
       scope: "service::user.auth.xboxlive.com::MBI_SSL",
-    }),
+    }).toString(),
   });
-  const responseJson = await response.json();
+  const responseJson = JSON.parse(response.text || "{}");
   return responseJson.access_token;
 }
 
@@ -51,7 +51,7 @@ export async function getXBLToken(authToken: string) {
       }),
     },
   );
-  const responseJson = await response.json();
+  const responseJson = JSON.parse(response.text || "{}");
   const xblToken = responseJson.Token;
   const xblNotAfter = responseJson.NotAfter;
   const userHash = responseJson.DisplayClaims.xui[0].uhs;
@@ -77,7 +77,7 @@ export async function getXSTSToken(xblToken: string) {
       }),
     },
   );
-  const responseJson = await response.json();
+  const responseJson = JSON.parse(response.text || "{}");
   const xstsToken = responseJson.Token;
   return xstsToken;
 }
@@ -99,7 +99,7 @@ export async function getMinecraftToken(
       }),
     },
   );
-  const responseJson = await response.json();
+  const responseJson = JSON.parse(response.text || "{}");
   return responseJson.access_token;
 }
 
@@ -113,7 +113,7 @@ export async function getMinecraftProfile(minecraftToken: string) {
       },
     },
   );
-  const responseJson = await response.json();
+  const responseJson = JSON.parse(response.text || "{}");
   return { id: responseJson.id, name: responseJson.name };
 }
 

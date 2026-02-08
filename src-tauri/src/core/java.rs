@@ -2,7 +2,7 @@ use regex::Regex;
 use std::process::Command;
 
 #[tauri::command]
-pub fn get_java_version(java_path: String) -> Result<String, String> {
+pub async fn get_java_version(java_path: String) -> Result<String, String> {
     let output = Command::new(&java_path)
         .arg("-version")
         .output()

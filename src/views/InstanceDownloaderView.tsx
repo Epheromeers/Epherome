@@ -7,6 +7,7 @@ import type {
   MinecraftVersion,
   MinecraftVersionManifest,
 } from "../core/download";
+import { fetch } from "../utils/http";
 
 export default function InstanceDownloaderView(props: {
   onBack: (version?: MinecraftVersion) => void;
@@ -19,9 +20,9 @@ export default function InstanceDownloaderView(props: {
   const [selected, setSelected] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("https://piston-meta.mojang.com/mc/game/version_manifest.json")
-      .then((res) => res.json())
-      .then(setVersionList);
+    fetch("https://piston-meta.mojang.com/mc/game/version_manifest.json").then(
+      (res) => setVersionList(JSON.parse(res.text || "{}")),
+    );
   }, []);
 
   return (

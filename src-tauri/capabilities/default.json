@@ -7,18 +7,6 @@
     "core:default",
     "opener:default",
     "os:default",
-    "http:default",
-    {
-      "identifier": "http:allow-fetch",
-      "allow": [
-        {
-          "url": "https://**"
-        },
-        {
-          "url": "http://**"
-        }
-      ]
-    },
     "dialog:default"
   ]
 }

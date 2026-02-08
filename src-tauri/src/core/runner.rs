@@ -13,7 +13,7 @@ struct ProcessOutput {
 }
 
 #[tauri::command]
-pub fn launch_minecraft(
+pub async fn launch_minecraft(
     app: AppHandle,
     java_path: String,
     cwd: String,

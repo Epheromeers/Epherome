@@ -1,5 +1,4 @@
 import { path } from "@tauri-apps/api";
-import { fetch } from "@tauri-apps/plugin-http";
 import type { MinecraftInstance } from "../store/data";
 import {
   exists,
@@ -9,6 +8,7 @@ import {
   writeFile,
   writeTextFile,
 } from "../utils/fs";
+import { fetch } from "../utils/http";
 
 type MinecraftVersionType = "release" | "snapshot" | "old_alpha" | "old_beta";
 
@@ -32,8 +32,8 @@ export async function downloadFile(
   url: string,
   destination: string,
 ): Promise<void> {
-  const result = await fetch(url, { method: "GET" });
-  const resultBytes = await result.bytes();
+  const result = await fetch(url, { method: "GET", response_type: "bytes" });
+  const resultBytes = new Uint8Array(result.bytes || []);
   await mkdir(await path.dirname(destination));
   await writeFile(destination, resultBytes);
 }
@@ -93,7 +93,7 @@ export async function installFabric(
   const response = await fetch(
     `https://meta.fabricmc.net/v2/versions/loader/${gameVersion}/${loaderVersion}/profile/json`,
   );
-  const json = await response.json();
+  const json = JSON.parse(response.text || "{}");
   const moddedId = json.id;
   const jsonPath = await path.join(
     instance.directory,
