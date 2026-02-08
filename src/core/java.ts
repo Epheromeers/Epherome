@@ -3,7 +3,11 @@ import { nanoid } from "nanoid";
 import type { JavaRuntime } from "../store/data";
 
 export async function getJavaVersion(javaPath: string): Promise<string | null> {
-  return await invoke("get_java_version", { javaPath });
+  try {
+    return await invoke("get_java_version", { javaPath });
+  } catch {
+    return null;
+  }
 }
 
 export async function detectJavas(): Promise<JavaRuntime[]> {
