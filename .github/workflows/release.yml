@@ -31,9 +31,9 @@ jobs:
           - platform: 'windows-latest'
             name: 'Windows x64'
             args: '' 
-#         - platform: 'windows-11-arm'
-#           name: 'Windows arm64'
-#           args: '' 
+          - platform: 'windows-11-arm'
+            name: 'Windows arm64'
+            args: '' 
 
     runs-on: ${{ matrix.platform }}
 
@@ -83,6 +83,7 @@ jobs:
           tagName: v__VERSION__
           releaseName: "Epherome v__VERSION__"
           releaseBody: "See the assets to download and install this version."
+          releaseAssetNamePattern: "[name]-[version]-[platform]-[arch].[ext]"
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
