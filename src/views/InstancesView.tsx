@@ -1,16 +1,58 @@
+import { path } from "@tauri-apps/api";
+import { openPath } from "@tauri-apps/plugin-opener";
 import { FileDown, FilePlus, Pencil } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "../components/Button";
 import Center from "../components/Center";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
 import ListItem from "../components/ListItem";
+import TabButton from "../components/TabButton";
 import type { MinecraftVersion } from "../core/download";
 import { AppContext } from "../store";
+import type { MinecraftInstance } from "../store/data";
+import { readDir } from "../utils/fs";
 import InstanceDownloaderView from "./InstanceDownloaderView";
 import InstanceEditorView from "./InstanceEditorView";
 import InstanceInstallerView from "./InstanceInstallerView";
 import { InstanceModLoaderView } from "./InstanceModLoaderView";
+
+function InstanceModViewer(props: { instance: MinecraftInstance }) {
+  const current = props.instance;
+  const [modsPath, setModsPath] = useState<string>();
+  const [modList, setModList] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string>();
+
+  useEffect(() => {
+    path.join(current.directory, "mods").then((modsPath) => {
+      setModsPath(modsPath);
+      readDir(modsPath).then((files) =>
+        setModList(files.map((f) => f.name).filter((n) => n.endsWith(".jar"))),
+      );
+    });
+  }, [current]);
+
+  return (
+    <div className="p-4 space-y-2">
+      <div className="flex space-x-2">
+        <Button onClick={() => modsPath && openPath(modsPath)}>
+          Reveal Mods Directory
+        </Button>
+      </div>
+      <div className="space-y-1">
+        {modList.map((mod) => (
+          <ListItem
+            checked={selected === mod}
+            key={mod}
+            onClick={() => setSelected(mod)}
+          >
+            {mod}
+          </ListItem>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function InstancesView() {
   const app = useContext(AppContext);
@@ -23,6 +65,7 @@ export default function InstancesView() {
   const [showing, setShowing] = useState<
     "list" | "create" | "download" | "edit" | "install" | "modLoader"
   >("list");
+  const [option, setOption] = useState<"general" | "mods">("general");
 
   const onBack = () => setShowing("list");
 
@@ -98,22 +141,45 @@ export default function InstancesView() {
         )}
         {showing === "list" &&
           (current ? (
-            <div className="p-4 space-y-2">
-              <Label title="Name">{current.name}</Label>
-              <Label title="Directory">{current.directory}</Label>
-              <Label title="Version">{current.version}</Label>
-              <div className="flex space-x-2">
-                <Button onClick={() => setShowing("edit")}>
-                  <Pencil size={16} />
-                  <div>Edit</div>
-                </Button>
-                <Button onClick={onDelete} danger>
-                  Delete
-                </Button>
+            <div>
+              <div className="flex space-x-2 p-4">
+                <TabButton
+                  active={option === "general"}
+                  onClick={() => setOption("general")}
+                >
+                  General
+                </TabButton>
+                <TabButton
+                  active={option === "mods"}
+                  onClick={() => setOption("mods")}
+                >
+                  Mods
+                </TabButton>
               </div>
-              <Button onClick={() => setShowing("modLoader")}>
-                Add Mod Loader
-              </Button>
+              {option === "general" ? (
+                <div className="p-4 space-y-2">
+                  <Label title="Name">{current.name}</Label>
+                  <Label title="Directory">{current.directory}</Label>
+                  <Label title="Version">{current.version}</Label>
+                  <div className="flex space-x-2">
+                    <Button onClick={() => setShowing("edit")}>
+                      <Pencil size={16} />
+                      <div>Edit</div>
+                    </Button>
+                    <Button onClick={onDelete} danger>
+                      Delete
+                    </Button>
+                  </div>
+                  <Button onClick={() => openPath(current.directory)}>
+                    Reveal Game Directory
+                  </Button>
+                  <Button onClick={() => setShowing("modLoader")}>
+                    Add Mod Loader
+                  </Button>
+                </div>
+              ) : (
+                <InstanceModViewer instance={current} />
+              )}
             </div>
           ) : (
             <Center className="h-full">
