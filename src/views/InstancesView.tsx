@@ -15,7 +15,7 @@ import { readDir } from "../utils/fs";
 import InstanceDownloaderView from "./InstanceDownloaderView";
 import InstanceEditorView from "./InstanceEditorView";
 import InstanceInstallerView from "./InstanceInstallerView";
-import { InstanceModLoaderView } from "./InstanceModLoaderView";
+import InstanceModLoaderView from "./InstanceModLoaderView";
 
 function InstanceModViewer(props: { instance: MinecraftInstance }) {
   const current = props.instance;

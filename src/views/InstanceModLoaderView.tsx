@@ -12,7 +12,7 @@ import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
 import { fetch } from "../utils/http";
 
-export function InstanceModLoaderView(props: {
+export default function InstanceModLoaderView(props: {
   current: MinecraftInstance;
   onBack: () => void;
 }) {
