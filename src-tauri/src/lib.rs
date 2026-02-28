@@ -2,7 +2,7 @@ mod core;
 mod utils;
 
 use core::auth::get_microsoft_auth_code;
-use core::java::get_java_version;
+use core::java::{detect_java_runtimes, get_java_version};
 use core::runner::launch_minecraft;
 use utils::fs::{exists, mkdir, read_dir, read_file, read_text_file, write_file, write_text_file};
 use utils::http::fetch;
@@ -17,6 +17,7 @@ pub fn run() {
             launch_minecraft,
             get_microsoft_auth_code,
             get_java_version,
+            detect_java_runtimes,
             read_text_file,
             write_text_file,
             read_file,

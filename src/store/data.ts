@@ -24,6 +24,7 @@ export interface MinecraftInstance {
   name: string;
   directory: string;
   version: string;
+  javaId?: string;
   checked?: boolean;
 }
 

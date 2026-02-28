@@ -74,11 +74,28 @@ src-tauri/src/
 
 ```bash
 npm run dev          # Vite dev server only (no Tauri shell)
-npm run build        # tsc type-check → vite build (run this to verify TS)
+npm run build        # tsc type-check → vite build (full production build)
 npm run preview      # Preview the production bundle
 npm run lint         # Biome check --write (auto-fixes style + organizes imports)
 npm run tauri dev    # Full Tauri app in development mode
 npm run tauri build  # Production desktop binaries
+```
+
+### Verification After Changes
+
+To verify frontend changes, run these two commands instead of `npm run build`
+(which includes a slow Vite bundling step that is unnecessary for validation):
+
+```bash
+npm run lint         # Biome: auto-fix formatting + imports
+npx tsc --noEmit    # TypeScript type-check only (no Vite build)
+```
+
+For Rust changes, run from the `src-tauri/` directory:
+
+```bash
+cargo clippy         # Lint
+cargo fmt            # Format
 ```
 
 ### Rust Backend
@@ -86,8 +103,8 @@ npm run tauri build  # Production desktop binaries
 ```bash
 # Run from src-tauri/ or use --manifest-path from root
 cargo build
-cargo clippy
-cargo fmt
+cargo clippy         # Lint
+cargo fmt            # Format
 ```
 
 ### Tests
@@ -140,8 +157,8 @@ cargo fmt
   // WRONG — do not create ButtonProps interface
   ```
 - `strict: true`, `noUnusedLocals: true`, `noUnusedParameters: true` are all on.
-  Every unused import or variable is a compile error. Always run `npm run build`
-  to verify.
+  Every unused import or variable is a compile error. Always run `npm run lint`
+  then `npx tsc --noEmit` to verify.
 
 ### 4.3 React Component Rules
 
@@ -408,8 +425,9 @@ These are displayed in `TaskManagerView`. Do not swallow errors silently in view
 
 - Run `npm run lint` before finalizing changes — Biome auto-fixes formatting and
   import ordering in one pass.
-- Run `npm run build` to verify TypeScript compiles without errors before declaring
-  a task complete.
+- Run `npx tsc --noEmit` to verify TypeScript compiles without errors before
+  declaring a task complete. This is faster than `npm run build` since it skips
+  the Vite bundling step.
 - Run `cargo clippy` and `cargo fmt` after any Rust changes.
 - Keep views lean: only `useContext`, local UI state, and event handler wiring.
   All business logic belongs in `src/core/`.

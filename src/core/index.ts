@@ -218,10 +218,15 @@ export async function launchMinecraft(
   setMessage("Minecraft is running");
 
   try {
+    const runtimes = app.getData().settings.javaRuntimes;
+    const instanceJava = instance.javaId
+      ? runtimes?.find((rt) => rt.id === instance.javaId)
+      : undefined;
+    const globalJava = runtimes?.find((rt) => rt.checked);
+    const javaPath = instanceJava?.pathname ?? globalJava?.pathname ?? "java";
+
     await invoke("launch_minecraft", {
-      javaPath:
-        app.getData().settings.javaRuntimes?.find((rt) => rt.checked)
-          ?.pathname ?? "java",
+      javaPath,
       cwd: instance.directory,
       args: launchCommand,
       nanoid: instance.id,

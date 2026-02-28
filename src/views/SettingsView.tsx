@@ -1,6 +1,14 @@
 import { app, path } from "@tauri-apps/api";
+import { open } from "@tauri-apps/plugin-dialog";
 import { arch, platform, version } from "@tauri-apps/plugin-os";
-import { CircleSlash, CircleX, Plus, Radar, Save } from "lucide-react";
+import {
+  CircleSlash,
+  CircleX,
+  FolderSearch,
+  Plus,
+  Radar,
+  Save,
+} from "lucide-react";
 import { nanoid } from "nanoid";
 import { useContext, useEffect, useState } from "react";
 import Button from "../components/Button";
@@ -61,11 +69,15 @@ export default function SettingsView() {
                 }}
                 className={`flex grow rounded items-center space-x-2 py-1 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 ${rt.checked && "bg-gray-100 dark:bg-gray-700"}`}
               >
-                <div className="font-medium">{rt.nickname}</div>
-                <div className="text-gray-600 dark:text-gray-300">
+                {rt.nickname && (
+                  <div className="font-medium">{rt.nickname}</div>
+                )}
+                <div className="rounded bg-blue-400 text-white px-1.5 py-0.5 text-xs font-medium">
+                  {rt.version ?? "Unknown"}
+                </div>
+                <div className="text-gray-600 dark:text-gray-300 text-sm truncate">
                   {rt.pathname}
                 </div>
-                <div>(Java Version: {rt.version ?? "Unknown"})</div>
               </button>
               <IconButton
                 onClick={() =>
@@ -85,72 +97,125 @@ export default function SettingsView() {
           <div>No java runtimes.</div>
         )}
         {newJava && (
-          <div className="flex space-x-2">
-            <Input
-              value={newJavaNickname}
-              onChange={setNewJavaNickname}
-              placeholder="Nickname (Optional)"
-            />
-            <Input
-              value={newJavaPath}
-              onChange={setNewJavaPath}
-              placeholder="Path to Java Executable"
-              spellCheck={false}
-            />
-            <Button
-              onClick={() => {
-                if (newJavaPath) {
-                  getJavaVersion(newJavaPath)
-                    .then((javaVersion) => {
-                      app.setData((prev) => {
-                        const newRt = {
-                          id: nanoid(),
-                          nickname: newJavaNickname,
-                          pathname: newJavaPath,
-                          version: javaVersion as string,
-                        };
-                        if (prev.settings.javaRuntimes) {
-                          prev.settings.javaRuntimes.push(newRt);
-                        } else {
-                          prev.settings.javaRuntimes = [newRt];
-                        }
+          <div className="rounded border border-gray-300 dark:border-gray-700 p-3 space-y-2">
+            <div className="text-sm font-medium">Add Java Runtime</div>
+            <div className="flex space-x-2">
+              <Input
+                value={newJavaNickname}
+                onChange={setNewJavaNickname}
+                placeholder="Nickname (Optional)"
+              />
+              <Input
+                value={newJavaPath}
+                onChange={setNewJavaPath}
+                placeholder="Path to Java Executable"
+                spellCheck={false}
+              />
+            </div>
+            <div className="flex space-x-2">
+              <Button
+                onClick={() => {
+                  open({
+                    directory: false,
+                    multiple: false,
+                  }).then((value) => {
+                    if (value) setNewJavaPath(value);
+                  });
+                }}
+              >
+                <FolderSearch size={16} />
+                <div>Browse</div>
+              </Button>
+              <Button
+                onClick={() => {
+                  if (newJavaPath) {
+                    getJavaVersion(newJavaPath)
+                      .then((javaVersion) => {
+                        app.setData((prev) => {
+                          const newRt = {
+                            id: nanoid(),
+                            nickname: newJavaNickname,
+                            pathname: newJavaPath,
+                            version: javaVersion as string,
+                          };
+                          if (prev.settings.javaRuntimes) {
+                            prev.settings.javaRuntimes.push(newRt);
+                          } else {
+                            prev.settings.javaRuntimes = [newRt];
+                          }
+                        });
+                        setNewJavaNickname("");
+                        setNewJavaPath("");
+                        setNewJava(false);
+                      })
+                      .catch((err) => {
+                        app.openDialog({
+                          title: "Java Test Failed",
+                          message: `${err}`,
+                        });
                       });
-                      setNewJavaNickname("");
-                      setNewJavaPath("");
-                      setNewJava(false);
-                    })
-                    .catch((err) => {
-                      app.openDialog({
-                        title: "Java Test Failed",
-                        message: `${err}`,
-                      });
-                    });
-                }
-              }}
-            >
-              <Save size={16} />
-              <div>Test and Save</div>
-            </Button>
-            <Button onClick={() => setNewJava(false)}>
-              <CircleSlash size={16} />
-              <div>Cancel</div>
-            </Button>
+                  }
+                }}
+              >
+                <Save size={16} />
+                <div>Test and Save</div>
+              </Button>
+              <Button onClick={() => setNewJava(false)}>
+                <CircleSlash size={16} />
+                <div>Cancel</div>
+              </Button>
+            </div>
           </div>
         )}
         <div className="flex space-x-2 items-center">
           <Button
             onClick={() => {
               setDetecting(true);
-              detectJavas().then((detected) => {
-                setDetecting(false);
-                app.setData((prev) => {
-                  if (prev.settings.javaRuntimes) {
-                    prev.settings.javaRuntimes.push(...detected);
-                  } else {
-                    prev.settings.javaRuntimes = detected;
+              detectJavas()
+                .then((detected) => {
+                  setDetecting(false);
+                  const existingPaths = new Set(
+                    data.settings.javaRuntimes?.map((rt) => rt.pathname),
+                  );
+                  const newRuntimes = detected.filter(
+                    (rt) => !existingPaths.has(rt.pathname),
+                  );
+                  if (newRuntimes.length > 0) {
+                    app.setData((prev) => {
+                      if (prev.settings.javaRuntimes) {
+                        prev.settings.javaRuntimes.push(...newRuntimes);
+                      } else {
+                        prev.settings.javaRuntimes = newRuntimes;
+                      }
+                      const hasChecked = prev.settings.javaRuntimes.some(
+                        (rt) => rt.checked,
+                      );
+                      if (
+                        !hasChecked &&
+                        prev.settings.javaRuntimes.length > 0
+                      ) {
+                        prev.settings.javaRuntimes[0].checked = true;
+                      }
+                    });
                   }
+                  const skipped = detected.length - newRuntimes.length;
+                  app.openDialog({
+                    title: "Detection Complete",
+                    message:
+                      newRuntimes.length > 0
+                        ? `Found ${newRuntimes.length} new Java runtime${newRuntimes.length > 1 ? "s" : ""}.${skipped > 0 ? ` ${skipped} duplicate${skipped > 1 ? "s" : ""} skipped.` : ""}`
+                        : detected.length > 0
+                          ? "All detected Java runtimes are already in the list."
+                          : "No Java runtimes found on this system.",
+                  });
+                })
+                .catch((err) => {
+                  setDetecting(false);
+                  app.openDialog({
+                    title: "Detection Failed",
+                    message: `${err}`,
+                  });
                 });
-              });
             }}
             disabled={detecting}
           >

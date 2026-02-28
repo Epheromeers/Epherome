@@ -15,6 +15,7 @@ import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import Input from "../components/Input";
 import Label from "../components/Label";
+import { getJavaMajorVersion } from "../core/java";
 import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
 import { exists, readDir } from "../utils/fs";
@@ -24,11 +25,13 @@ export default function InstanceEditorView(props: {
   previous?: MinecraftInstance;
 }) {
   const app = useContext(AppContext);
+  const data = app.getData();
   const prev = props.previous;
 
   const [name, setName] = useState(prev?.name ?? String());
   const [directory, setDirectory] = useState(prev?.directory ?? String());
   const [version, setVersion] = useState(prev?.version ?? String());
+  const [javaId, setJavaId] = useState(prev?.javaId ?? String());
   const [errorMessage, setErrorMessage] = useState(String());
   const [versionList, setVersionList] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -44,6 +47,7 @@ export default function InstanceEditorView(props: {
             prevInstance.name = name;
             prevInstance.directory = directory;
             prevInstance.version = version;
+            prevInstance.javaId = javaId || undefined;
           }
         });
       } else {
@@ -54,6 +58,7 @@ export default function InstanceEditorView(props: {
             name,
             directory,
             version,
+            javaId: javaId || undefined,
           });
         });
       }
@@ -179,6 +184,39 @@ export default function InstanceEditorView(props: {
               </button>
             </div>
           )}
+        </Label>
+        <Label
+          title="Java Runtime"
+          helper="Optionally assign a specific Java runtime for this instance."
+          accentHelper="Leave as 'Global Default' to use the globally selected Java runtime."
+        >
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setJavaId(String())}
+              className={`rounded px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 ${!javaId ? "bg-gray-100 dark:bg-gray-700 font-medium" : ""}`}
+            >
+              Global Default
+            </button>
+            {data.settings.javaRuntimes?.map((rt) => {
+              const major = rt.version ? getJavaMajorVersion(rt.version) : null;
+              return (
+                <button
+                  type="button"
+                  key={rt.id}
+                  onClick={() => setJavaId(rt.id)}
+                  className={`flex items-center space-x-1.5 rounded px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 ${javaId === rt.id ? "bg-gray-100 dark:bg-gray-700 font-medium" : ""}`}
+                >
+                  {major && (
+                    <span className="rounded bg-blue-400 text-white px-1.5 py-0.5 text-xs">
+                      {major}
+                    </span>
+                  )}
+                  <span>{rt.nickname || rt.pathname}</span>
+                </button>
+              );
+            })}
+          </div>
         </Label>
         <div className="py-2">
           <Button onClick={onSave}>
