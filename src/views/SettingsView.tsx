@@ -260,10 +260,7 @@ export default function SettingsView() {
           System
         </RadioButton>
       </Label>
-      <Label
-        title="Instance Page Style"
-        helper="This option will not have actual effects currently."
-      >
+      <Label title="Instance Page Style">
         <RadioButton
           checked={data.settings.independentInstance}
           onClick={() => {

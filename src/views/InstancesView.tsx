@@ -1,7 +1,13 @@
 import { path } from "@tauri-apps/api";
 import { openPath } from "@tauri-apps/plugin-opener";
-import { FileDown, FilePlus, Pencil } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import {
+  ChevronDown,
+  ChevronRight,
+  FileDown,
+  FilePlus,
+  Pencil,
+} from "lucide-react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import Button from "../components/Button";
 import Center from "../components/Center";
 import IconButton from "../components/IconButton";
@@ -16,6 +22,50 @@ import InstanceDownloaderView from "./InstanceDownloaderView";
 import InstanceEditorView from "./InstanceEditorView";
 import InstanceInstallerView from "./InstanceInstallerView";
 import InstanceModLoaderView from "./InstanceModLoaderView";
+
+function shortenDirectory(directory: string): string {
+  const sep = directory.includes("\\") ? "\\" : "/";
+  const segments = directory.split(sep).filter((s) => s.length > 0);
+  if (segments.length <= 2) return segments.join("/");
+  return segments.slice(-2).join("/");
+}
+
+function InstanceGroup(props: {
+  directory: string;
+  instances: MinecraftInstance[];
+  onSelect: (instance: MinecraftInstance) => void;
+}) {
+  const [expanded, setExpanded] = useState(true);
+  return (
+    <div>
+      <button
+        type="button"
+        className="flex items-center w-full py-1 px-2 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+        onClick={() => setExpanded(!expanded)}
+      >
+        {expanded ? (
+          <ChevronDown size={14} className="mr-1 shrink-0" />
+        ) : (
+          <ChevronRight size={14} className="mr-1 shrink-0" />
+        )}
+        <span className="truncate">{shortenDirectory(props.directory)}</span>
+      </button>
+      {expanded && (
+        <div className="ml-2">
+          {props.instances.map((instance) => (
+            <ListItem
+              checked={instance.checked}
+              onClick={() => props.onSelect(instance)}
+              key={instance.id}
+            >
+              {instance.name}
+            </ListItem>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function InstanceModViewer(props: { instance: MinecraftInstance }) {
   const current = props.instance;
@@ -69,6 +119,34 @@ export default function InstancesView() {
 
   const onBack = () => setShowing("list");
 
+  const selectInstance = (instance: MinecraftInstance) => {
+    if (showing === "list") {
+      app.setData((prevData) => {
+        const former = prevData.instances.find(
+          (i) => i.id === instance.id,
+        )?.checked;
+        prevData.instances.forEach((i) => {
+          i.checked = false;
+        });
+        if (!former) {
+          const target = prevData.instances.find((i) => i.id === instance.id);
+          if (target) target.checked = true;
+        }
+      });
+    }
+  };
+
+  const grouped = useMemo(() => {
+    if (data.settings.independentInstance) return null;
+    const map = new Map<string, MinecraftInstance[]>();
+    for (const instance of data.instances) {
+      const group = map.get(instance.directory);
+      if (group) group.push(instance);
+      else map.set(instance.directory, [instance]);
+    }
+    return [...map.entries()];
+  }, [data.instances, data.settings.independentInstance]);
+
   const onDelete = () => {
     if (current) {
       app.openDialog({
@@ -98,25 +176,24 @@ export default function InstancesView() {
             <FileDown />
           </IconButton>
         </div>
-        {data.instances.map((instance) => (
-          <ListItem
-            checked={instance.checked}
-            onClick={() => {
-              if (showing === "list") {
-                app.setData((prevData) => {
-                  const former = instance.checked;
-                  prevData.instances.forEach((instance) => {
-                    instance.checked = false;
-                  });
-                  if (!former) instance.checked = true;
-                });
-              }
-            }}
-            key={instance.id}
-          >
-            {instance.name}
-          </ListItem>
-        ))}
+        {grouped
+          ? grouped.map(([directory, instances]) => (
+              <InstanceGroup
+                directory={directory}
+                instances={instances}
+                onSelect={selectInstance}
+                key={directory}
+              />
+            ))
+          : data.instances.map((instance) => (
+              <ListItem
+                checked={instance.checked}
+                onClick={() => selectInstance(instance)}
+                key={instance.id}
+              >
+                {instance.name}
+              </ListItem>
+            ))}
       </div>
       <div className="w-4/5 overflow-auto">
         {showing === "create" && <InstanceEditorView onBack={onBack} />}
