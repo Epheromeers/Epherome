@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "com.epherome",
+  "app": {
+    "windows": [
+      {
+        "title": "Epherome",
+        "width": 800,
+        "height": 600,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "trafficLightPosition": { "x": 15, "y": 20 }
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
+}
