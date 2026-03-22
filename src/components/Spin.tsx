@@ -1,7 +1,7 @@
-export default function Spin() {
+export default function Spin(props: { blackRing?: boolean }) {
   return (
     <svg
-      className="mr-3 size-5 animate-spin text-blue-500"
+      className={`mr-3 size-5 animate-spin ${props.blackRing ? "text-black" : "text-blue-500"}`}
       viewBox="0 0 50 50"
       fill="none"
     >

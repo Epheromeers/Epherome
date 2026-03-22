@@ -1,5 +1,84 @@
 import { downloadFile } from "./download";
 
+export type RunTaskResult<R> =
+  | {
+      ok: true;
+      data: R;
+      error: undefined;
+    }
+  | {
+      ok: false;
+      data: undefined;
+      error: string;
+    };
+
+function normalizeConcurrency(limit: number, total: number): number {
+  if (total <= 0) {
+    return 0;
+  }
+  if (!Number.isFinite(limit)) {
+    return 1;
+  }
+  const rounded = Math.floor(limit);
+  if (rounded < 1) {
+    return 1;
+  }
+  return Math.min(rounded, total);
+}
+
+function toErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return `${error}`;
+}
+
+export async function runWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  worker: (item: T, index: number) => Promise<R>,
+): Promise<RunTaskResult<R>[]> {
+  if (items.length === 0) {
+    return [];
+  }
+
+  const safeLimit = normalizeConcurrency(limit, items.length);
+  const resultBuffer: RunTaskResult<R>[] = new Array(items.length);
+  let cursor = 0;
+
+  async function runWorker() {
+    while (true) {
+      const index = cursor;
+      cursor++;
+      if (index >= items.length) {
+        return;
+      }
+      try {
+        const data = await worker(items[index], index);
+        resultBuffer[index] = {
+          ok: true,
+          data,
+          error: undefined,
+        };
+      } catch (error) {
+        resultBuffer[index] = {
+          ok: false,
+          data: undefined,
+          error: toErrorMessage(error),
+        };
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: safeLimit }, async () => {
+      await runWorker();
+    }),
+  );
+
+  return resultBuffer;
+}
+
 export interface OmittedParallelTask {
   url: string;
   name: string;

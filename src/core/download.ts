@@ -3,8 +3,8 @@ import type { MinecraftInstance } from "../store/data";
 import {
   exists,
   mkdir,
-  readFile,
   readTextFile,
+  sha1File,
   writeFile,
   writeTextFile,
 } from "../utils/fs";
@@ -54,15 +54,7 @@ export async function checkHash(
   filePath: string,
   hash: string,
 ): Promise<boolean> {
-  const buffer = await readFile(filePath);
-  const hashBuffer = await crypto.subtle.digest(
-    "SHA-1",
-    buffer.buffer as ArrayBuffer,
-  );
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const computedHash = hashArray
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+  const computedHash = await sha1File(filePath);
   return computedHash === hash;
 }
 

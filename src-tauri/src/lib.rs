@@ -4,7 +4,10 @@ mod utils;
 use core::auth::get_microsoft_auth_code;
 use core::java::{detect_java_runtimes, get_java_version};
 use core::runner::launch_minecraft;
-use utils::fs::{exists, mkdir, read_dir, read_file, read_text_file, write_file, write_text_file};
+use utils::fs::{
+    check_files, exists, inspect_files, mkdir, read_dir, read_file, read_text_file, sha1_file,
+    write_file, write_text_file,
+};
 use utils::http::fetch;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -25,6 +28,9 @@ pub fn run() {
             exists,
             mkdir,
             read_dir,
+            sha1_file,
+            check_files,
+            inspect_files,
             fetch
         ])
         .run(tauri::generate_context!())

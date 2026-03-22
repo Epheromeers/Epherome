@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
-import Button from "../components/Button";
 import Label from "../components/Label";
 import Link from "../components/Link";
+import Spin from "../components/Spin";
 import { launchMinecraft } from "../core";
 import { getJavaMajorVersion } from "../core/java";
 import type { ParallelTask } from "../core/parallel";
@@ -74,6 +74,9 @@ export default function DashboardView() {
     doLaunch(account, instance);
   };
 
+  const launchButtonDisabled =
+    typeof app.getLaunchMessage() === "string" || !account || !instance;
+
   return (
     <div className="flex flex-col h-full p-6">
       <div className="rounded border border-gray-300 dark:border-gray-700 p-2 text-sm">
@@ -98,14 +101,15 @@ export default function DashboardView() {
       <div className="grow" />
       <div>{app.getLaunchMessage()}</div>
       <div className="flex items-center space-x-3">
-        <Button
+        <button
+          type="button"
           onClick={onLaunchClick}
-          disabled={
-            typeof app.getLaunchMessage() === "string" || !account || !instance
-          }
+          className={`flex items-center rounded-lg font-medium px-5 py-2 bg-sky-400 text-white ${launchButtonDisabled ? "opacity-80 cursor-not-allowed" : "hover:bg-sky-500 active:bg-sky-600"}`}
+          disabled={launchButtonDisabled}
         >
+          {launchButtonDisabled && <Spin blackRing />}
           Launch
-        </Button>
+        </button>
         <div className="grow" />
         <div>
           <Label title="Account">{account ? account.username : "None"}</Label>

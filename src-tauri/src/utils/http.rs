@@ -1,5 +1,12 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::OnceLock;
+
+static HTTP_CLIENT: OnceLock<reqwest::Client> = OnceLock::new();
+
+fn get_http_client() -> &'static reqwest::Client {
+    HTTP_CLIENT.get_or_init(reqwest::Client::new)
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FetchOptions {
@@ -26,7 +33,7 @@ pub struct FetchResponse {
 pub async fn fetch(url: String, options: FetchOptions) -> Result<FetchResponse, String> {
     let method = options.method.unwrap_or_else(|| "GET".to_string());
     let response_type = options.response_type.to_lowercase();
-    let client = reqwest::Client::new();
+    let client = get_http_client();
 
     let mut request = match method.to_uppercase().as_str() {
         "GET" => client.get(&url),
