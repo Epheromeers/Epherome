@@ -3,6 +3,17 @@ use sha1::{Digest, Sha1};
 use std::fs;
 use std::path::Path;
 
+fn sha1_hex(content: &[u8]) -> String {
+    let mut hasher = Sha1::new();
+    hasher.update(content);
+    hasher
+        .finalize()
+        .as_slice()
+        .iter()
+        .map(|byte| format!("{:02x}", byte))
+        .collect::<String>()
+}
+
 /// Information about a directory entry
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -109,10 +120,7 @@ pub async fn write_file(pathname: String, contents: Vec<u8>) -> Result<(), Strin
 #[tauri::command]
 pub async fn sha1_file(pathname: String) -> Result<String, String> {
     let content = fs::read(&pathname).map_err(|e| format!("Failed to read file: {}", e))?;
-    let mut hasher = Sha1::new();
-    hasher.update(content);
-    let hash = hasher.finalize();
-    Ok(format!("{:x}", hash))
+    Ok(sha1_hex(&content))
 }
 
 #[tauri::command]
@@ -128,10 +136,7 @@ pub async fn check_files(requests: Vec<FileCheckRequest>) -> Result<Vec<FileChec
             if let Some(expected_sha1) = request.expected_sha1 {
                 match fs::read(&request.pathname) {
                     Ok(content) => {
-                        let mut hasher = Sha1::new();
-                        hasher.update(content);
-                        let hash = hasher.finalize();
-                        let actual = format!("{:x}", hash);
+                        let actual = sha1_hex(&content);
                         hash_matched = Some(actual == expected_sha1);
                     }
                     Err(e) => {

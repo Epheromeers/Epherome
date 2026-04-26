@@ -74,8 +74,12 @@ export default function DashboardView() {
     doLaunch(account, instance);
   };
 
-  const launchButtonDisabled =
-    typeof app.getLaunchMessage() === "string" || !account || !instance;
+  const launchButtonDisabled: "launching" | "unavailable" | null =
+    typeof app.getLaunchMessage() === "string"
+      ? "launching"
+      : !account || !instance
+        ? "unavailable"
+        : null;
 
   return (
     <div className="flex flex-col h-full p-6">
@@ -101,15 +105,22 @@ export default function DashboardView() {
       <div className="grow" />
       <div>{app.getLaunchMessage()}</div>
       <div className="flex items-center space-x-3">
-        <button
-          type="button"
-          onClick={onLaunchClick}
-          className={`flex items-center rounded-lg font-medium px-5 py-2 bg-sky-400 text-white ${launchButtonDisabled ? "opacity-80 cursor-not-allowed" : "hover:bg-sky-500 active:bg-sky-600"}`}
-          disabled={launchButtonDisabled}
-        >
-          {launchButtonDisabled && <Spin blackRing />}
-          Launch
-        </button>
+        <div>
+          {launchButtonDisabled === "unavailable" && (
+            <div className="mb-1 text-sm text-red-500">
+              Select an account and an instance to launch.
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={onLaunchClick}
+            className={`flex items-center rounded-lg font-medium px-5 py-2 bg-sky-400 text-white ${launchButtonDisabled ? "opacity-80 cursor-not-allowed" : "hover:bg-sky-500 active:bg-sky-600"}`}
+            disabled={launchButtonDisabled !== null}
+          >
+            {launchButtonDisabled === "launching" && <Spin blackRing />}
+            Launch
+          </button>
+        </div>
         <div className="grow" />
         <div>
           <Label title="Account">{account ? account.username : "None"}</Label>

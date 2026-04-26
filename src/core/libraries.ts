@@ -136,7 +136,7 @@ export async function checkLibraries(
     };
 
     const resolvedLibrary = libraryByPath[inspectResult.pathname];
-    if (!resolvedLibrary || !resolvedLibrary.sha1 || !inspectResult.exists) {
+    if (!resolvedLibrary?.sha1 || !inspectResult.exists) {
       continue;
     }
 
