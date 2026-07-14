@@ -1,5 +1,6 @@
 import { Fragment, useContext } from "react";
-import { AppContext, type DialogOptions } from "../store";
+import { AppContext } from "../store";
+import type { DialogOptions } from "../store/status";
 import Button from "./Button";
 
 export default function Dialog(props: DialogOptions) {

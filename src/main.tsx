@@ -4,8 +4,12 @@ import App from "./App";
 import "./index.css";
 import { listen } from "@tauri-apps/api/event";
 import { detectJavas } from "./core/java";
-import { errorList, type ProcessOutput, processOutputTable } from "./store";
 import { ensureDataDir, readUserData } from "./store/data";
+import {
+  emitError,
+  emitProcessOutput,
+  type ProcessOutput,
+} from "./store/status";
 import { updateTheme } from "./store/theme";
 
 async function initialize() {
@@ -31,15 +35,12 @@ async function initialize() {
 }
 
 window.addEventListener("error", (event) => {
-  errorList.push(event.message);
+  emitError(event.message);
 });
 
 listen("process-output", (event) => {
   const payload = event.payload as ProcessOutput;
-  if (!processOutputTable[payload.nanoid]) {
-    processOutputTable[payload.nanoid] = [];
-  }
-  processOutputTable[payload.nanoid].push(payload);
+  emitProcessOutput(payload);
 });
 
 initialize().then(([userData, noJres]) => {

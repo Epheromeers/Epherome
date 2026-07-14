@@ -1,24 +1,6 @@
 import { createContext } from "react";
 import { fallbackUserData, type UserData } from "./data";
-
-export interface ProcessOutput {
-  nanoid: string;
-  stream: string;
-  line: string;
-}
-
-export const errorList: string[] = [];
-
-export const processOutputTable: { [key: string]: ProcessOutput[] } = {};
-
-export interface DialogOptions {
-  title: string;
-  message: string;
-  dangerMessage?: string;
-  action?: () => void;
-  danger?: boolean;
-  actionMessage?: string;
-}
+import type { DialogOptions } from "./status";
 
 export interface AppContextType {
   setView: (viewName: string) => void;
