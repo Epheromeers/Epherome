@@ -117,7 +117,7 @@ export default function App(props: { userData: UserData; noJres: boolean }) {
     shouldPersistUserData.current = true;
 
     setUserData((prevData) => {
-      const newData = { ...prevData };
+      const newData = structuredClone(prevData);
       updater(newData);
       return newData;
     });

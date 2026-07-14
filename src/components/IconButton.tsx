@@ -2,11 +2,12 @@ export default function IconButton(props: {
   children: React.ReactNode;
   active?: boolean;
   onClick?: () => void;
+  small?: boolean;
   title?: string;
 }) {
   return (
     <button
-      className={`flex items-center rounded p-2 ${props.active ? "bg-gray-100 dark:bg-gray-700" : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"}`}
+      className={`flex items-center rounded ${props.small ? "p-1 text-gray-700 dark:text-gray-400" : "p-2"} ${props.active ? "bg-gray-100 dark:bg-gray-700" : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"}`}
       title={props.title}
       type="button"
       onClick={props.onClick}

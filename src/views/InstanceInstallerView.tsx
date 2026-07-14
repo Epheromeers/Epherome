@@ -31,15 +31,16 @@ export default function InstanceInstallerView(props: {
         actionMessage: danger ? "Install Anyway" : "Install",
         action: () => {
           const ver = props.version;
+          const instance = {
+            id: nanoid(),
+            timestamp: Date.now(),
+            name: `Minecraft ${ver.id} (Downloaded)`,
+            directory: dir,
+            version: ver.id,
+            checked: false,
+          };
           app.setData((prevData) => {
-            prevData.instances.push({
-              id: nanoid(),
-              timestamp: Date.now(),
-              name: `Minecraft ${ver.id} (Downloaded)`,
-              directory: dir,
-              version: ver.id,
-              checked: false,
-            });
+            prevData.instances.push(instance);
           });
           installMinecraft(ver, dir)
             .then(() => props.onBack())

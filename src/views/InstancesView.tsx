@@ -3,8 +3,10 @@ import { openPath } from "@tauri-apps/plugin-opener";
 import {
   ChevronDown,
   ChevronRight,
-  FileDown,
-  FilePlus,
+  Copy,
+  Download,
+  FolderOpen,
+  FolderPlus,
   Pencil,
 } from "lucide-react";
 import { useContext, useEffect, useMemo, useState } from "react";
@@ -168,13 +170,23 @@ export default function InstancesView() {
   return (
     <div className="flex h-full">
       <div className="w-1/5 border-r border-gray-300 dark:border-gray-700 p-2 space-y-1 overflow-auto">
-        <div className="flex justify-center">
-          <IconButton onClick={() => setShowing("create")}>
-            <FilePlus />
-          </IconButton>
-          <IconButton onClick={() => setShowing("download")}>
-            <FileDown />
-          </IconButton>
+        <div className="space-y-1 pb-1">
+          <Button
+            className="w-full justify-start"
+            title="Add an existing Minecraft instance"
+            onClick={() => setShowing("create")}
+          >
+            <FolderPlus size={16} />
+            <span>Import</span>
+          </Button>
+          <Button
+            className="w-full justify-start"
+            title="Download and install Minecraft"
+            onClick={() => setShowing("download")}
+          >
+            <Download size={16} />
+            <span>Download</span>
+          </Button>
         </div>
         {grouped
           ? grouped.map(([directory, instances]) => (
@@ -236,7 +248,38 @@ export default function InstancesView() {
               {option === "general" ? (
                 <div className="p-4 space-y-2">
                   <Label title="Name">{current.name}</Label>
-                  <Label title="Directory">{current.directory}</Label>
+                  <Label
+                    title="Directory"
+                    afterTitle={
+                      <div className="flex items-center space-x-1">
+                        <IconButton
+                          small
+                          title="Reveal game directory"
+                          onClick={() => openPath(current.directory)}
+                        >
+                          <FolderOpen size={12} />
+                        </IconButton>
+                        <IconButton
+                          small
+                          title="Copy directory path"
+                          onClick={() =>
+                            navigator.clipboard
+                              .writeText(current.directory)
+                              .catch((err) => {
+                                app.openDialog({
+                                  title: "Error",
+                                  message: `${err}`,
+                                });
+                              })
+                          }
+                        >
+                          <Copy size={12} />
+                        </IconButton>
+                      </div>
+                    }
+                  >
+                    {current.directory}
+                  </Label>
                   <Label title="Version">{current.version}</Label>
                   <div className="flex space-x-2">
                     <Button onClick={() => setShowing("edit")}>
@@ -247,9 +290,6 @@ export default function InstancesView() {
                       Delete
                     </Button>
                   </div>
-                  <Button onClick={() => openPath(current.directory)}>
-                    Reveal Game Directory
-                  </Button>
                   <Button onClick={() => setShowing("modLoader")}>
                     Add Mod Loader
                   </Button>

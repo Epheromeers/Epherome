@@ -136,15 +136,16 @@ export default function AccountEditorView(props: { onBack: () => void }) {
                 <Button
                   onClick={() => {
                     if (name) {
+                      const account = {
+                        id: nanoid(),
+                        timestamp: Date.now(),
+                        username: name,
+                        category,
+                        uuid,
+                        accessToken,
+                      };
                       app.setData((prev) => {
-                        prev.accounts.push({
-                          id: nanoid(),
-                          timestamp: Date.now(),
-                          username: name,
-                          category,
-                          uuid,
-                          accessToken,
-                        });
+                        prev.accounts.push(account);
                       });
                       onBack();
                     }

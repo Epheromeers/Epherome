@@ -59,15 +59,16 @@ export default function InstanceModLoaderView(props: {
       setInstalling(true);
       installFabric(props.current, gameVersion, selectedModLoaderVersion)
         .then((moddedId) => {
+          const instance = {
+            id: nanoid(),
+            name: newInstanceName,
+            directory: props.current.directory,
+            version: moddedId,
+            timestamp: Date.now(),
+            checked: false,
+          };
           app.setData((prev) => {
-            prev.instances.push({
-              id: nanoid(),
-              name: newInstanceName,
-              directory: props.current.directory,
-              version: moddedId,
-              timestamp: Date.now(),
-              checked: false,
-            });
+            prev.instances.push(instance);
           });
           props.onBack();
         })

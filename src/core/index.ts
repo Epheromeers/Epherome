@@ -47,12 +47,11 @@ export async function launchMinecraft(
   setDownloadList: (list: ParallelTask[]) => void,
 ) {
   setMessage("Preparing to launch");
+  let accessToken = account.accessToken;
 
   // Check account availability
   if (account.category === "microsoft") {
-    const tokenPayload = JSON.parse(
-      atob(account.accessToken?.split(".")[1] ?? ""),
-    );
+    const tokenPayload = JSON.parse(atob(accessToken?.split(".")[1] ?? ""));
     if (new Date(tokenPayload.exp * 1000) < new Date()) {
       const refreshed = await refreshMicrosoftAccount(account);
       if (refreshed) {
@@ -64,7 +63,7 @@ export async function launchMinecraft(
             formerAccount.accessToken = refreshed;
           }
         });
-        account.accessToken = refreshed;
+        accessToken = refreshed;
       }
     }
   }
@@ -197,7 +196,7 @@ export async function launchMinecraft(
     assets_root: await path.join(instance.directory, "assets"),
     assets_index_name: jsonObject.assets,
     auth_uuid: account.uuid ?? "00000000000000000000000000000000",
-    auth_access_token: account.accessToken ?? "0.0.0",
+    auth_access_token: accessToken ?? "0.0.0",
     // clientid: "clientid",
     // auth_xuid: "xuid",
     version_type: jsonObject.type,

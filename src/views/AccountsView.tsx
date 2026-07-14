@@ -51,11 +51,14 @@ export default function AccountsView() {
             key={account.id}
             onClick={() => {
               app.setData((prevData) => {
-                const former = account.checked;
+                const target = prevData.accounts.find(
+                  (item) => item.id === account.id,
+                );
+                const former = target?.checked;
                 prevData.accounts.forEach((acc) => {
                   acc.checked = false;
                 });
-                if (!former) account.checked = true;
+                if (!former && target) target.checked = true;
               });
             }}
           >

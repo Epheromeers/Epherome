@@ -57,13 +57,16 @@ export default function SettingsView() {
               <button
                 type="button"
                 onClick={() => {
-                  const former = rt.checked;
                   app.setData((prev) => {
+                    const target = prev.settings.javaRuntimes?.find(
+                      (nextRt) => nextRt.id === rt.id,
+                    );
+                    const former = target?.checked;
                     prev.settings.javaRuntimes?.forEach((nextRt) => {
                       nextRt.checked = false;
                     });
-                    if (!former) {
-                      rt.checked = true;
+                    if (!former && target) {
+                      target.checked = true;
                     }
                   });
                 }}
@@ -131,13 +134,13 @@ export default function SettingsView() {
                   if (newJavaPath) {
                     getJavaVersion(newJavaPath)
                       .then((javaVersion) => {
+                        const newRt = {
+                          id: nanoid(),
+                          nickname: newJavaNickname,
+                          pathname: newJavaPath,
+                          version: javaVersion as string,
+                        };
                         app.setData((prev) => {
-                          const newRt = {
-                            id: nanoid(),
-                            nickname: newJavaNickname,
-                            pathname: newJavaPath,
-                            version: javaVersion as string,
-                          };
                           if (prev.settings.javaRuntimes) {
                             prev.settings.javaRuntimes.push(newRt);
                           } else {

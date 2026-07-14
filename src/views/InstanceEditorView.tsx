@@ -51,15 +51,16 @@ export default function InstanceEditorView(props: {
           }
         });
       } else {
+        const instance = {
+          id: nanoid(),
+          timestamp: Date.now(),
+          name,
+          directory,
+          version,
+          javaId: javaId || undefined,
+        };
         app.setData((prevData) => {
-          prevData.instances.push({
-            id: nanoid(),
-            timestamp: Date.now(),
-            name,
-            directory,
-            version,
-            javaId: javaId || undefined,
-          });
+          prevData.instances.push(instance);
         });
       }
       props.onBack();
