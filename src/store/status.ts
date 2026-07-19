@@ -39,6 +39,13 @@ export interface DialogOptions {
   actionMessage?: string;
 }
 
+export type ToastCategory = "success" | "fail";
+
+export interface ToastOptions {
+  category: ToastCategory;
+  content: string;
+}
+
 export interface AppStatus {
   launchMessage?: string;
 }

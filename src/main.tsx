@@ -31,7 +31,7 @@ async function initialize() {
     }
   }
 
-  return [userData, noJres];
+  return [userData, noJres] as const;
 }
 
 window.addEventListener("error", (event) => {

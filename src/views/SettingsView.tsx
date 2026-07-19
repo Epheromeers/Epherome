@@ -285,6 +285,28 @@ export default function SettingsView() {
           Put Instances with the Same Game Directory Together
         </RadioButton>
       </Label>
+      <Label title="Developer Tools">
+        <RadioButton
+          checked={data.settings.developerTools}
+          onClick={() => {
+            app.setData((prev) => {
+              prev.settings.developerTools = true;
+            });
+          }}
+        >
+          On
+        </RadioButton>
+        <RadioButton
+          checked={!data.settings.developerTools}
+          onClick={() => {
+            app.setData((prev) => {
+              prev.settings.developerTools = false;
+            });
+          }}
+        >
+          Off
+        </RadioButton>
+      </Label>
       <Label title="App Version">{meta.appVersion}</Label>
       <Label title="App Data Directory">{meta.appDir}</Label>
       <Label title="OS">

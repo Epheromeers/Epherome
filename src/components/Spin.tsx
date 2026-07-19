@@ -1,11 +1,12 @@
 export default function Spin(props: { blackRing?: boolean }) {
   return (
     <svg
+      aria-label="Loading"
       className={`mr-3 size-5 animate-spin ${props.blackRing ? "text-black" : "text-blue-500"}`}
-      viewBox="0 0 50 50"
       fill="none"
+      role="status"
+      viewBox="0 0 50 50"
     >
-      <title>Loading</title>
       <circle
         className="opacity-20"
         cx="25"

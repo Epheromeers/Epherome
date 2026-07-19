@@ -173,7 +173,6 @@ export default function InstancesView() {
         <div className="space-y-1 pb-1">
           <Button
             className="w-full justify-start"
-            title="Add an existing Minecraft instance"
             onClick={() => setShowing("create")}
           >
             <FolderPlus size={16} />
@@ -181,7 +180,6 @@ export default function InstancesView() {
           </Button>
           <Button
             className="w-full justify-start"
-            title="Download and install Minecraft"
             onClick={() => setShowing("download")}
           >
             <Download size={16} />
@@ -254,17 +252,23 @@ export default function InstancesView() {
                       <div className="flex items-center space-x-1">
                         <IconButton
                           small
-                          title="Reveal game directory"
+                          title="Reveal Game Directory"
                           onClick={() => openPath(current.directory)}
                         >
                           <FolderOpen size={12} />
                         </IconButton>
                         <IconButton
                           small
-                          title="Copy directory path"
+                          title="Copy Directory Path"
                           onClick={() =>
                             navigator.clipboard
                               .writeText(current.directory)
+                              .then(() => {
+                                app.openToast({
+                                  category: "success",
+                                  content: "Copied successfully",
+                                });
+                              })
                               .catch((err) => {
                                 app.openDialog({
                                   title: "Error",

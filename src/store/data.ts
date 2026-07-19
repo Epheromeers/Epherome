@@ -40,16 +40,22 @@ export interface UserData {
   accounts: MinecraftAccount[];
   instances: MinecraftInstance[];
   settings: {
+    developerTools: boolean;
     javaRuntimes?: JavaRuntime[];
     theme: ColorTheme;
     independentInstance?: boolean;
   };
 }
 
+type StoredUserData = Omit<Partial<UserData>, "settings"> & {
+  settings?: Partial<UserData["settings"]>;
+};
+
 export const fallbackUserData: UserData = {
   accounts: [],
   instances: [],
   settings: {
+    developerTools: false,
     javaRuntimes: [],
     theme: "system",
     independentInstance: false,
@@ -68,11 +74,18 @@ export async function ensureDataDir() {
   }
 }
 
-export async function readUserData() {
+export async function readUserData(): Promise<UserData> {
   const dataPath = await path.join(await path.appDataDir(), "data.json");
   const dataContent = await readTextFile(dataPath);
-  const dataObject = JSON.parse(dataContent);
-  return { ...fallbackUserData, ...dataObject };
+  const dataObject = JSON.parse(dataContent) as StoredUserData;
+  return {
+    ...fallbackUserData,
+    ...dataObject,
+    settings: {
+      ...fallbackUserData.settings,
+      ...dataObject.settings,
+    },
+  };
 }
 
 export async function writeUserData(userData: UserData) {
