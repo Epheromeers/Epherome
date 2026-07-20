@@ -13,26 +13,27 @@ pub async fn get_microsoft_auth_code(app: tauri::AppHandle) -> Result<(), String
             .title("Microsoft Authentication")
             .inner_size(768.0, 512.0)
             .on_page_load(|window, payload| {
-                let url = payload.url().to_string();
                 let prefix = "https://login.live.com/oauth20_desktop.srf?";
-                if url.starts_with(prefix) {
-                    let url = url.replace(prefix, "");
-                    let params = url.split("&").collect::<Vec<&str>>();
-                    for param in params {
-                        let pair = param.split("=").collect::<Vec<&str>>();
-                        if pair[0] == "code" {
-                            window.close().unwrap();
-                            window.app_handle().emit("ms-auth-code", pair[1]).unwrap();
-                            break;
+                let url = payload.url();
+                if url.as_str().starts_with(prefix) {
+                    let auth_code = url.query_pairs().find_map(|(key, value)| {
+                        if key == "code" {
+                            Some(value.into_owned())
+                        } else {
+                            None
                         }
-                    }
+                    });
+                    let _ = window
+                        .app_handle()
+                        .emit("ms-auth-code", auth_code.unwrap_or_default());
+                    let _ = window.close();
                 }
             })
             .build()
-            .unwrap();
+            .map_err(|err| format!("Failed to open Microsoft authentication window: {}", err))?;
     window.on_window_event(move |event| {
         if let tauri::WindowEvent::CloseRequested { .. } = event {
-            app.emit("ms-auth-code", "").unwrap()
+            let _ = app.emit("ms-auth-code", "");
         }
     });
     Ok(())

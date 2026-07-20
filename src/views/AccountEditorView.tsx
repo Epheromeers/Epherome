@@ -7,36 +7,9 @@ import Input from "../components/Input";
 import Label from "../components/Label";
 import RadioButton from "../components/RadioButton";
 import Spin from "../components/Spin";
-import {
-  getAuthCode,
-  getAuthToken,
-  getMinecraftProfile,
-  getMinecraftToken,
-  getXBLToken,
-  getXSTSToken,
-} from "../core/auth";
+import { authenticateMicrosoftAccount } from "../core/auth";
 import { AppContext } from "../store";
 import type { MinecraftAccount, MinecraftAccountCategory } from "../store/data";
-
-async function createMicrosoftAccount(): Promise<MinecraftAccount> {
-  const authCode = await getAuthCode();
-  const authToken = await getAuthToken(authCode);
-  const { xblToken, xblNotAfter, userHash } = await getXBLToken(authToken);
-  const xstsToken = await getXSTSToken(xblToken);
-  const mcToken = await getMinecraftToken(userHash, xstsToken);
-  const { id, name } = await getMinecraftProfile(mcToken);
-  return {
-    id: nanoid(),
-    timestamp: Date.now(),
-    username: name,
-    category: "microsoft",
-    uuid: id,
-    xblToken,
-    xblNotAfter,
-    userHash,
-    accessToken: mcToken,
-  };
-}
 
 export default function AccountEditorView(props: { onBack: () => void }) {
   const app = useContext(AppContext);
@@ -53,8 +26,19 @@ export default function AccountEditorView(props: { onBack: () => void }) {
   };
 
   const onMicrosoftAuthenticate = () => {
-    createMicrosoftAccount()
-      .then((account) => {
+    authenticateMicrosoftAccount()
+      .then((result) => {
+        if (result === null) {
+          setAuthenticating(false);
+          return;
+        }
+
+        const account: MinecraftAccount = {
+          id: nanoid(),
+          timestamp: Date.now(),
+          category: "microsoft",
+          ...result,
+        };
         app.setData((prev) => {
           prev.accounts.push(account);
         });

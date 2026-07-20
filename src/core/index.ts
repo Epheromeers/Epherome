@@ -53,17 +53,23 @@ export async function launchMinecraft(
   if (account.category === "microsoft") {
     const tokenPayload = JSON.parse(atob(accessToken?.split(".")[1] ?? ""));
     if (new Date(tokenPayload.exp * 1000) < new Date()) {
-      const refreshed = await refreshMicrosoftAccount(account);
-      if (refreshed) {
-        app.setData((data) => {
-          const formerAccount = data.accounts.find(
-            (acc) => acc.id === account.id,
-          );
-          if (formerAccount) {
-            formerAccount.accessToken = refreshed;
-          }
-        });
-        accessToken = refreshed;
+      try {
+        const refreshed = await refreshMicrosoftAccount(account);
+        if (refreshed) {
+          app.setData((data) => {
+            const formerAccount = data.accounts.find(
+              (acc) => acc.id === account.id,
+            );
+            if (formerAccount) {
+              formerAccount.accessToken = refreshed;
+            }
+          });
+          accessToken = refreshed;
+        }
+      } catch (err) {
+        console.log(
+          `Failed to refresh the Microsoft account token; continuing with the existing token: ${err}`,
+        );
       }
     }
   }
