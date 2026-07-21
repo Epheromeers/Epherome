@@ -16,7 +16,7 @@ import {
   checkLibraries,
   checkVersionJar,
 } from "./libraries";
-import { ParallelManager, type ParallelTask } from "./parallel";
+import { ParallelManager } from "./parallel";
 
 export interface MinecraftClientJson {
   mainClass: string;
@@ -44,7 +44,6 @@ export async function launchMinecraft(
   account: MinecraftAccount,
   instance: MinecraftInstance,
   setMessage: (msg: string | undefined) => void,
-  setDownloadList: (list: ParallelTask[]) => void,
 ) {
   setMessage("Preparing to launch");
   let accessToken = account.accessToken;
@@ -150,11 +149,10 @@ export async function launchMinecraft(
         };
       }),
     ),
-    (list) => {
+    () => {
       setMessage(
         `Downloading missing library (${libraryDownloadManager.finished}/${missingLibrariesEntries.length})`,
       );
-      setDownloadList(list);
     },
   );
 
@@ -182,11 +180,10 @@ export async function launchMinecraft(
         };
       }),
     ),
-    (list) => {
+    () => {
       setMessage(
         `Downloading missing asset (${assetDownloadManager.finished}/${missingAssets.length})`,
       );
-      setDownloadList(list);
     },
   );
 
@@ -237,6 +234,10 @@ export async function launchMinecraft(
       cwd: instance.directory,
       args: launchCommand,
       nanoid: instance.id,
+    });
+    app.openToast({
+      category: "success",
+      content: "An Minecraft instance launched successfully.",
     });
   } catch (e) {
     app.openDialog({

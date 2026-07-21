@@ -36,17 +36,15 @@ pub async fn launch_minecraft(
 
     std::thread::spawn(move || {
         let reader = BufReader::new(stdout);
-        for line in reader.lines() {
-            if let Ok(line) = line {
-                let _ = app_stdout.emit(
-                    "process-output",
-                    ProcessOutput {
-                        nanoid: nanoid_stdout.clone(),
-                        stream: "stdout".into(),
-                        line,
-                    },
-                );
-            }
+        for line in reader.lines().map_while(Result::ok) {
+            let _ = app_stdout.emit(
+                "process-output",
+                ProcessOutput {
+                    nanoid: nanoid_stdout.clone(),
+                    stream: "stdout".into(),
+                    line,
+                },
+            );
         }
     });
 
@@ -55,17 +53,15 @@ pub async fn launch_minecraft(
 
     std::thread::spawn(move || {
         let reader = BufReader::new(stderr);
-        for line in reader.lines() {
-            if let Ok(line) = line {
-                let _ = app_stderr.emit(
-                    "process-output",
-                    ProcessOutput {
-                        nanoid: nanoid_stderr.clone(),
-                        stream: "stderr".into(),
-                        line,
-                    },
-                );
-            }
+        for line in reader.lines().map_while(Result::ok) {
+            let _ = app_stderr.emit(
+                "process-output",
+                ProcessOutput {
+                    nanoid: nanoid_stderr.clone(),
+                    stream: "stderr".into(),
+                    line,
+                },
+            );
         }
     });
 
