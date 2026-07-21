@@ -107,6 +107,8 @@ export async function launchMinecraft(
   );
 
   if (jsonObject.inheritsFrom) {
+    setMessage("Checking version jar");
+    await checkVersionJar(instance, jsonObject, jsonObject.inheritsFrom);
     classpath.push(
       await path.join(
         instance.directory,

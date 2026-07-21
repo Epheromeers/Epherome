@@ -236,18 +236,19 @@ export async function checkLibraries(
 export async function checkVersionJar(
   instance: MinecraftInstance,
   clientJson: MinecraftClientJson,
+  version = instance.version,
 ) {
   const clientJarPath = await path.join(
     instance.directory,
     "versions",
-    instance.version,
-    `${instance.version}.jar`,
+    version,
+    `${version}.jar`,
   );
   if (!(await exists(clientJarPath))) {
     await downloadFile(clientJson.downloads.client.url, clientJarPath);
   } else if (
     !(await checkHash(clientJarPath, clientJson.downloads.client.sha1))
   ) {
-    console.log(`Hash mismatch for version jar ${instance.version}.jar`);
+    console.log(`Hash mismatch for version jar ${version}.jar`);
   }
 }
