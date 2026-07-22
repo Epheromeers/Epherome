@@ -4,7 +4,7 @@ import App from "./App";
 import "./index.css";
 import { listen } from "@tauri-apps/api/event";
 import { detectJavas } from "./core/java";
-import { ensureDataDir, readUserData } from "./store/data";
+import { ensureDataDir, readUserData, writeUserData } from "./store/data";
 import {
   emitError,
   emitProcessOutput,
@@ -19,16 +19,18 @@ async function initialize() {
   const userData = await readUserData();
   updateTheme(userData.settings.theme);
 
-  if (
-    !userData.settings.javaRuntimes ||
-    userData.settings.javaRuntimes.length === 0
-  ) {
-    const rts = await detectJavas();
-    userData.settings.javaRuntimes = rts;
-
-    if (rts.length === 0) {
-      noJres = true;
+  if (!userData.settings.javaDetectionCompleted) {
+    if (
+      !userData.settings.javaRuntimes ||
+      userData.settings.javaRuntimes.length === 0
+    ) {
+      const rts = await detectJavas();
+      userData.settings.javaRuntimes = rts;
+      noJres = rts.length === 0;
     }
+
+    userData.settings.javaDetectionCompleted = true;
+    await writeUserData(userData);
   }
 
   return [userData, noJres] as const;

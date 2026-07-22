@@ -8,12 +8,8 @@ interface DetectedJava {
   vendor: string;
 }
 
-export async function getJavaVersion(javaPath: string): Promise<string | null> {
-  try {
-    return await invoke("get_java_version", { javaPath });
-  } catch {
-    return null;
-  }
+export async function getJavaVersion(javaPath: string): Promise<string> {
+  return await invoke("get_java_version", { javaPath });
 }
 
 /** Parse a Java version string into its major version number. */

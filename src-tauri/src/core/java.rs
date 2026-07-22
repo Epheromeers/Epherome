@@ -1,13 +1,32 @@
 use regex::Regex;
 use serde::Serialize;
 use std::collections::HashSet;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::{env, fs};
 
+#[cfg(target_os = "windows")]
+const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+
+fn java_command(java_path: &str) -> Command {
+    #[cfg(target_os = "windows")]
+    {
+        let mut command = Command::new(java_path);
+        command.creation_flags(CREATE_NO_WINDOW);
+        command
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        Command::new(java_path)
+    }
+}
+
 #[tauri::command]
 pub async fn get_java_version(java_path: String) -> Result<String, String> {
-    let output = Command::new(&java_path)
+    let output = java_command(&java_path)
         .arg("-version")
         .output()
         .map_err(|e| format!("Failed to execute java: {}", e))?;
@@ -89,7 +108,7 @@ fn detect_vendor(first_line: &str) -> String {
 
 /// Extract version string and vendor from `java -version` output, returns None on failure.
 fn try_get_java_info(java_path: &str) -> Option<JavaInfo> {
-    let output = Command::new(java_path).arg("-version").output().ok()?;
+    let output = java_command(java_path).arg("-version").output().ok()?;
     if !output.status.success() {
         return None;
     }
@@ -112,10 +131,6 @@ const JAVA_EXE: &str = "java.exe";
 #[cfg(not(target_os = "windows"))]
 const JAVA_EXE: &str = "java";
 
-/// The platform-specific name of the javaw executable (Windows only).
-#[cfg(target_os = "windows")]
-const JAVAW_EXE: &str = "javaw.exe";
-
 /// Collect candidate java executable paths from well-known locations.
 fn collect_candidate_paths() -> Vec<PathBuf> {
     let mut candidates: Vec<PathBuf> = Vec::new();
@@ -130,20 +145,12 @@ fn collect_candidate_paths() -> Vec<PathBuf> {
         for dir in path_var.split(sep) {
             let p = Path::new(dir).join(JAVA_EXE);
             candidates.push(p);
-            #[cfg(target_os = "windows")]
-            {
-                candidates.push(Path::new(dir).join(JAVAW_EXE));
-            }
         }
     }
 
     // 2. JAVA_HOME environment variable
     if let Ok(java_home) = env::var("JAVA_HOME") {
         candidates.push(Path::new(&java_home).join("bin").join(JAVA_EXE));
-        #[cfg(target_os = "windows")]
-        {
-            candidates.push(Path::new(&java_home).join("bin").join(JAVAW_EXE));
-        }
     }
 
     // --- Platform-specific base directories ---
@@ -287,7 +294,6 @@ fn collect_candidate_paths() -> Vec<PathBuf> {
         for pf in &program_files_dirs {
             for folder in &java_folder_names {
                 add_children_bin(&mut candidates, &format!("{}\\{}", pf, folder), JAVA_EXE);
-                add_children_bin(&mut candidates, &format!("{}\\{}", pf, folder), JAVAW_EXE);
             }
         }
 
@@ -299,11 +305,6 @@ fn collect_candidate_paths() -> Vec<PathBuf> {
                 &mut candidates,
                 &format!("{}\\apps\\java", scoop_dir),
                 JAVA_EXE,
-            );
-            add_children_bin(
-                &mut candidates,
-                &format!("{}\\apps\\java", scoop_dir),
-                JAVAW_EXE,
             );
             // Scoop variants: adopt*, zulu*, etc.
             if let Ok(entries) = fs::read_dir(format!("{}\\apps", scoop_dir)) {

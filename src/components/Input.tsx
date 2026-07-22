@@ -1,4 +1,5 @@
 export default function Input(props: {
+  id?: string;
   placeholder?: string;
   value?: string;
   defaultValue?: string;
@@ -11,6 +12,7 @@ export default function Input(props: {
 }) {
   return (
     <input
+      id={props.id}
       placeholder={props.placeholder}
       value={props.value}
       defaultValue={props.defaultValue}
@@ -19,7 +21,7 @@ export default function Input(props: {
       onFocus={props.onFocus}
       onBlur={props.onBlur}
       spellCheck={props.spellCheck}
-      className={`border border-gray-300 dark:border-gray-700 rounded-full text-sm px-3 py-1 focus:outline-none focus:ring-2 ring-blue-500 ${props.className}`}
+      className={`rounded-full border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 ring-blue-500 dark:border-gray-700 ${props.className ?? ""}`}
     />
   );
 }

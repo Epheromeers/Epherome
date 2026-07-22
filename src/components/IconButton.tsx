@@ -9,6 +9,7 @@ export default function IconButton(props: {
   small?: boolean;
   title?: string;
   toast?: boolean;
+  tinted?: boolean;
   tooltipPlacement?: TooltipPlacement;
 }) {
   const [tooltipActive, setTooltipActive] = useState(false);
@@ -16,7 +17,7 @@ export default function IconButton(props: {
   return (
     <button
       aria-label={props.ariaLabel ?? props.title}
-      className={`relative flex items-center rounded ${props.small ? "p-1 text-gray-700 dark:text-gray-400" : "p-2"} ${props.toast ? "hover:bg-white/10 active:bg-white/20" : props.active ? "bg-gray-100 dark:bg-gray-700" : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"}`}
+      className={`relative flex items-center rounded ${props.small ? "p-1 text-gray-700 dark:text-gray-400" : "p-2"} ${props.toast ? "hover:bg-white/10 active:bg-white/20" : props.active ? "bg-gray-100 dark:bg-gray-700" : props.tinted ? "hover:bg-blue-100 active:bg-blue-200 dark:hover:bg-blue-900 dark:active:bg-blue-800" : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"}`}
       type="button"
       onClick={props.onClick}
       onMouseEnter={() => setTooltipActive(true)}

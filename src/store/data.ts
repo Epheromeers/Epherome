@@ -41,6 +41,7 @@ export interface UserData {
   instances: MinecraftInstance[];
   settings: {
     developerTools: boolean;
+    javaDetectionCompleted?: boolean;
     javaRuntimes?: JavaRuntime[];
     theme: ColorTheme;
     independentInstance?: boolean;
@@ -56,6 +57,7 @@ export const fallbackUserData: UserData = {
   instances: [],
   settings: {
     developerTools: false,
+    javaDetectionCompleted: false,
     javaRuntimes: [],
     theme: "system",
     independentInstance: false,

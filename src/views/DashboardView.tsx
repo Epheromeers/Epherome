@@ -61,7 +61,19 @@ export default function DashboardView() {
       : undefined;
     const globalJava = runtimes?.find((rt) => rt.checked);
     const selectedJava = instanceJava ?? globalJava;
-    const javaVersion = selectedJava?.version;
+
+    if (!selectedJava) {
+      app.openDialog({
+        title: "No Java Runtime Selected",
+        message:
+          'Please select a Java runtime in Settings. If you continue, Epherome will use "java" from PATH.',
+        actionMessage: "Use PATH Java",
+        action: () => doLaunch(account, instance),
+      });
+      return;
+    }
+
+    const javaVersion = selectedJava.version;
 
     const javaMajor = javaVersion ? getJavaMajorVersion(javaVersion) : null;
     const requiredMajor = getRequiredJavaMajor(instance.version);

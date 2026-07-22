@@ -6,6 +6,7 @@ export default function Button(props: {
   onClick?: () => void;
   disabled?: boolean;
   danger?: boolean;
+  secondary?: boolean;
   className?: string;
   title?: string;
 }) {
@@ -14,7 +15,7 @@ export default function Button(props: {
   return (
     <button
       aria-label={props.title}
-      className={`relative flex items-center gap-1 rounded-full text-sm font-medium px-3 py-1 ${props.danger ? "bg-red-400" : "bg-blue-400"} text-white ${props.disabled ? "opacity-80 cursor-not-allowed" : props.danger ? "hover:bg-red-500 active:bg-red-600" : "hover:bg-blue-500 active:bg-blue-600"} ${props.className ?? ""}`}
+      className={`relative flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium text-white ${props.danger ? "bg-red-400" : props.secondary ? "bg-gray-500" : "bg-blue-400"} ${props.disabled ? "cursor-not-allowed opacity-80" : props.danger ? "hover:bg-red-500 active:bg-red-600" : props.secondary ? "hover:bg-gray-600 active:bg-gray-700" : "hover:bg-blue-500 active:bg-blue-600"} ${props.className ?? ""}`}
       type="button"
       onClick={props.onClick}
       disabled={props.disabled}

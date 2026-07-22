@@ -15,7 +15,6 @@ import Button from "../components/Button";
 import IconButton from "../components/IconButton";
 import Input from "../components/Input";
 import Label from "../components/Label";
-import { getJavaMajorVersion } from "../core/java";
 import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
 import { exists, readDir } from "../utils/fs";
@@ -199,24 +198,19 @@ export default function InstanceEditorView(props: {
             >
               Global Default
             </button>
-            {data.settings.javaRuntimes?.map((rt) => {
-              const major = rt.version ? getJavaMajorVersion(rt.version) : null;
-              return (
-                <button
-                  type="button"
-                  key={rt.id}
-                  onClick={() => setJavaId(rt.id)}
-                  className={`flex items-center space-x-1.5 rounded px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 ${javaId === rt.id ? "bg-gray-100 dark:bg-gray-700 font-medium" : ""}`}
-                >
-                  {major && (
-                    <span className="rounded bg-blue-400 text-white px-1.5 py-0.5 text-xs">
-                      {major}
-                    </span>
-                  )}
-                  <span>{rt.nickname || rt.pathname}</span>
-                </button>
-              );
-            })}
+            {data.settings.javaRuntimes?.map((rt) => (
+              <button
+                type="button"
+                key={rt.id}
+                onClick={() => setJavaId(rt.id)}
+                className={`flex items-center space-x-1.5 rounded px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 ${javaId === rt.id ? "bg-gray-100 dark:bg-gray-700 font-medium" : ""}`}
+              >
+                <span className="shrink-0 rounded-md border border-gray-300 bg-white px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
+                  {rt.version ?? "Unknown version"}
+                </span>
+                <span>{rt.nickname || rt.pathname}</span>
+              </button>
+            ))}
           </div>
         </Label>
         <div className="py-2">

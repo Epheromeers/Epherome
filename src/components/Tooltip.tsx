@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export type TooltipPlacement = "bottom-right" | "right";
+export type TooltipPlacement = "bottom-left" | "bottom-right" | "right";
 
 const displayDelay = 500;
 const transitionDuration = 150;
@@ -8,6 +8,10 @@ const transitionDuration = 150;
 function getPlacementClasses(placement: TooltipPlacement) {
   if (placement === "right") {
     return "top-1/2 left-full ml-1 -translate-y-1/2 origin-left";
+  }
+
+  if (placement === "bottom-left") {
+    return "top-full right-full mt-1 mr-1 origin-top-right";
   }
 
   return "top-full left-full mt-1 ml-1 origin-top-left";
