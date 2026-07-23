@@ -1,6 +1,6 @@
 import { app, path } from "@tauri-apps/api";
 import { open } from "@tauri-apps/plugin-dialog";
-import { openPath } from "@tauri-apps/plugin-opener";
+import { openPath, openUrl } from "@tauri-apps/plugin-opener";
 import { arch, platform, version } from "@tauri-apps/plugin-os";
 import {
   CircleSlash,
@@ -11,6 +11,7 @@ import {
   LoaderCircle,
   Plus,
   Radar,
+  RefreshCw,
   Save,
 } from "lucide-react";
 import { nanoid } from "nanoid";
@@ -22,6 +23,7 @@ import Label from "../components/Label";
 import Link from "../components/Link";
 import RadioButton from "../components/RadioButton";
 import { detectJavas, getJavaVersion } from "../core/java";
+import { checkForUpdates } from "../core/update";
 import { AppContext } from "../store";
 
 async function getMeta() {
@@ -44,6 +46,7 @@ export default function SettingsView() {
   const [newJavaError, setNewJavaError] = useState<string>();
   const [savingJava, setSavingJava] = useState(false);
   const [detecting, setDetecting] = useState(false);
+  const [checkingForUpdates, setCheckingForUpdates] = useState(false);
 
   const javaRuntimes = data.settings.javaRuntimes ?? [];
   const hasSelectedJava = javaRuntimes.some((rt) => rt.checked);
@@ -95,6 +98,36 @@ export default function SettingsView() {
       setNewJavaError(`Could not run this Java executable: ${err}`);
     } finally {
       setSavingJava(false);
+    }
+  }
+
+  async function handleCheckForUpdates() {
+    setCheckingForUpdates(true);
+
+    try {
+      const result = await checkForUpdates(meta.appVersion);
+      if (result.updateAvailable) {
+        app.openDialog({
+          title: "Update Available",
+          message: `Epherome ${result.latestVersion} is available. You are using ${result.currentVersion}. Open GitHub Releases to download and install the update.`,
+          actionMessage: "Open GitHub",
+          action: () => {
+            openUrl(result.releaseUrl);
+          },
+        });
+      } else {
+        app.openToast({
+          category: "success",
+          content: `Epherome ${result.currentVersion} is up to date`,
+        });
+      }
+    } catch (err) {
+      app.openDialog({
+        title: "Update Check Failed",
+        message: `${err}`,
+      });
+    } finally {
+      setCheckingForUpdates(false);
     }
   }
 
@@ -439,7 +472,20 @@ export default function SettingsView() {
           Off
         </RadioButton>
       </Label>
-      <Label title="App Version">{meta.appVersion}</Label>
+      <Label title="App Version" className="space-y-1">
+        <div>{meta.appVersion}</div>
+        <Button
+          disabled={checkingForUpdates || meta.appVersion === "Loading"}
+          onClick={handleCheckForUpdates}
+        >
+          {checkingForUpdates ? (
+            <LoaderCircle className="animate-spin" size={16} />
+          ) : (
+            <RefreshCw size={16} />
+          )}
+          <div>{checkingForUpdates ? "Checking..." : "Check for Updates"}</div>
+        </Button>
+      </Label>
       <Label
         title="App Data Directory"
         afterTitle={
