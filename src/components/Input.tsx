@@ -9,6 +9,7 @@ export default function Input(props: {
   onBlur?: () => void;
   spellCheck?: boolean;
   className?: string;
+  ariaLabel?: string;
 }) {
   return (
     <input
@@ -21,6 +22,7 @@ export default function Input(props: {
       onFocus={props.onFocus}
       onBlur={props.onBlur}
       spellCheck={props.spellCheck}
+      aria-label={props.ariaLabel}
       className={`rounded-full border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 ring-blue-500 dark:border-gray-700 ${props.className ?? ""}`}
     />
   );
