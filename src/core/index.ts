@@ -10,7 +10,10 @@ import {
   parseClientJsonArguments,
 } from "./arguments";
 import { checkAssets } from "./assets";
-import { refreshMicrosoftAccount } from "./auth";
+import {
+  getMicrosoftAccountTokenExpiry,
+  refreshMicrosoftAccount,
+} from "./auth";
 import {
   type ClientJsonLibrary,
   checkLibraries,
@@ -44,6 +47,7 @@ export async function launchMinecraft(
   account: MinecraftAccount,
   instance: MinecraftInstance,
   setMessage: (msg: string | undefined) => void,
+  launchAnyway = false,
 ) {
   setMessage("Preparing to launch");
   let accessToken = account.accessToken;
@@ -52,6 +56,33 @@ export async function launchMinecraft(
   if (account.category === "microsoft") {
     const tokenPayload = JSON.parse(atob(accessToken?.split(".")[1] ?? ""));
     if (new Date(tokenPayload.exp * 1000) < new Date()) {
+      const xblTokenExpiry = getMicrosoftAccountTokenExpiry(account);
+      if (!launchAnyway && (!xblTokenExpiry || xblTokenExpiry <= new Date())) {
+        setMessage(undefined);
+        app.openDialog({
+          title: "Microsoft Account Token Expired",
+          message:
+            "Your Microsoft account token has expired and cannot be refreshed automatically. Re-login from Accounts to restore online authentication, or launch anyway with the expired token.",
+          actionMessage: "Launch Anyway",
+          action: () => {
+            void launchMinecraft(
+              app,
+              account,
+              instance,
+              setMessage,
+              true,
+            ).catch((err) => {
+              setMessage(undefined);
+              app.openDialog({
+                title: "Launch Failed",
+                message: `${err}`,
+              });
+            });
+          },
+        });
+        return;
+      }
+
       try {
         const refreshed = await refreshMicrosoftAccount(account);
         if (refreshed) {

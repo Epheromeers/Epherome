@@ -8,7 +8,7 @@ export default function TitleBar(props: { isMac: boolean }) {
 
   return (
     <div
-      className={`min-h-9 max-h-9 ${props.isMac ? "pl-24" : "pl-3"} flex items-center border-b border-gray-300 bg-linear-to-r from-sky-600 to-pink-300 text-white dark:border-gray-700`}
+      className={`min-h-9 max-h-9 ${props.isMac ? "pl-24" : "pl-3"} flex items-center border-b border-gray-300 bg-linear-to-r from-sky-600 to-pink-300 text-white dark:border-gray-700 dark:from-sky-700 dark:to-pink-400`}
       data-tauri-drag-region
     >
       <div className="text-sm font-medium">Epherome</div>

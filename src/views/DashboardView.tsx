@@ -143,7 +143,7 @@ export default function DashboardView() {
             <div className="grid gap-3 p-6 sm:grid-cols-2">
               <button
                 aria-label={`${instanceSelectionAction} instance`}
-                className="group flex min-h-20 w-full flex-col items-stretch rounded-lg bg-gray-100 p-4 text-left transition-colors hover:bg-gray-200 active:bg-gray-300 focus:outline-none focus:ring-2 ring-blue-500 dark:bg-gray-800 dark:hover:bg-gray-700 dark:active:bg-gray-600"
+                className="group flex min-h-20 w-full flex-col items-stretch rounded-lg bg-gray-100 p-4 text-left transition-colors hover:bg-gray-200 active:bg-gray-300 focus:outline-none focus:ring-2 ring-blue-500 dark:bg-gray-800 dark:hover:bg-gray-900 dark:active:bg-gray-950"
                 onClick={() => app.setView("instances")}
                 type="button"
               >
@@ -160,7 +160,7 @@ export default function DashboardView() {
                   </Label>
                 </div>
                 {!instance && (
-                  <div className="mt-3 flex items-center gap-1 self-start text-sm font-medium text-blue-500">
+                  <div className="mt-3 flex items-center gap-1 self-start text-sm font-medium text-blue-500 dark:text-blue-400">
                     <span>{instanceSelectionAction}</span>
                     <ChevronRight aria-hidden="true" size={16} />
                   </div>
@@ -168,7 +168,7 @@ export default function DashboardView() {
               </button>
               <button
                 aria-label={`${accountSelectionAction} account`}
-                className="group flex min-h-20 w-full flex-col items-stretch rounded-lg bg-gray-100 p-4 text-left transition-colors hover:bg-gray-200 active:bg-gray-300 focus:outline-none focus:ring-2 ring-blue-500 dark:bg-gray-800 dark:hover:bg-gray-700 dark:active:bg-gray-600"
+                className="group flex min-h-20 w-full flex-col items-stretch rounded-lg bg-gray-100 p-4 text-left transition-colors hover:bg-gray-200 active:bg-gray-300 focus:outline-none focus:ring-2 ring-blue-500 dark:bg-gray-800 dark:hover:bg-gray-900 dark:active:bg-gray-950"
                 onClick={() => app.setView("accounts")}
                 type="button"
               >
@@ -195,7 +195,7 @@ export default function DashboardView() {
                   </div>
                 </div>
                 {!account && (
-                  <div className="mt-3 flex items-center gap-1 self-start text-sm font-medium text-blue-500">
+                  <div className="mt-3 flex items-center gap-1 self-start text-sm font-medium text-blue-500 dark:text-blue-400">
                     <span>{accountSelectionAction}</span>
                     <ChevronRight aria-hidden="true" size={16} />
                   </div>
