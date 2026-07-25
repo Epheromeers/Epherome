@@ -15,6 +15,7 @@ import Center from "../components/Center";
 import IconButton from "../components/IconButton";
 import Label from "../components/Label";
 import ListItem from "../components/ListItem";
+import TabBar from "../components/TabBar";
 import TabButton from "../components/TabButton";
 import type { MinecraftVersion } from "../core/download";
 import { AppContext } from "../store";
@@ -123,6 +124,7 @@ export default function InstancesView() {
 
   const selectInstance = (instance: MinecraftInstance) => {
     if (showing === "list") {
+      setOption("general");
       app.setData((prevData) => {
         const former = prevData.instances.find(
           (i) => i.id === instance.id,
@@ -229,22 +231,31 @@ export default function InstancesView() {
         {showing === "list" &&
           (current ? (
             <div>
-              <div className="flex space-x-2 p-4">
+              <TabBar ariaLabel="Instance details">
                 <TabButton
                   active={option === "general"}
+                  ariaControls="instance-general-panel"
+                  id="instance-general-tab"
                   onClick={() => setOption("general")}
                 >
                   General
                 </TabButton>
                 <TabButton
                   active={option === "mods"}
+                  ariaControls="instance-mods-panel"
+                  id="instance-mods-tab"
                   onClick={() => setOption("mods")}
                 >
                   Mods
                 </TabButton>
-              </div>
+              </TabBar>
               {option === "general" ? (
-                <div className="p-4 space-y-2">
+                <div
+                  aria-labelledby="instance-general-tab"
+                  className="space-y-2 p-4"
+                  id="instance-general-panel"
+                  role="tabpanel"
+                >
                   <Label title="Name">{current.name}</Label>
                   <Label
                     title="Directory"
@@ -299,7 +310,13 @@ export default function InstancesView() {
                   </Button>
                 </div>
               ) : (
-                <InstanceModViewer instance={current} />
+                <div
+                  aria-labelledby="instance-mods-tab"
+                  id="instance-mods-panel"
+                  role="tabpanel"
+                >
+                  <InstanceModViewer instance={current} />
+                </div>
               )}
             </div>
           ) : (

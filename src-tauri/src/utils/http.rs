@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::OnceLock;
+use std::time::Duration;
 
 static HTTP_CLIENT: OnceLock<reqwest::Client> = OnceLock::new();
 
@@ -15,6 +16,7 @@ pub struct FetchOptions {
     pub body: Option<String>,
     #[serde(default = "default_response_type")]
     pub response_type: String,
+    pub timeout_ms: Option<u64>,
 }
 
 fn default_response_type() -> String {
@@ -55,6 +57,13 @@ pub async fn fetch(url: String, options: FetchOptions) -> Result<FetchResponse, 
     // Add body if provided
     if let Some(body) = options.body {
         request = request.body(body);
+    }
+
+    if let Some(timeout_ms) = options.timeout_ms {
+        if timeout_ms == 0 {
+            return Err("Request timeout must be greater than zero.".to_string());
+        }
+        request = request.timeout(Duration::from_millis(timeout_ms));
     }
 
     let response = request

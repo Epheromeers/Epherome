@@ -5,6 +5,7 @@ export interface FetchOptions {
   headers?: Record<string, string>;
   body?: string;
   response_type?: "text" | "bytes";
+  timeout_ms?: number;
 }
 
 export interface FetchResponse {

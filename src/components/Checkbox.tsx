@@ -3,11 +3,13 @@ import { Check } from "lucide-react";
 export default function Checkbox(props: {
   children: React.ReactNode;
   checked: boolean;
+  disabled?: boolean;
   onChange: (checked: boolean) => void;
 }) {
   return (
     <button
-      className="flex space-x-1 items-center"
+      className={`flex space-x-1 items-center ${props.disabled ? "cursor-not-allowed opacity-50" : ""}`}
+      disabled={props.disabled}
       type="button"
       onClick={() => props.onChange(!props.checked)}
     >
