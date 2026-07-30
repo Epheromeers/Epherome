@@ -22,9 +22,17 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
+toml = "0.9"
 tauri-plugin-os = "2"
 tauri-plugin-dialog = "2"
 regex = "1"
 reqwest = { version = "0.13", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 sha1 = "0.11"
+
+[target.'cfg(any(target_os = "linux", target_os = "android", target_vendor = "apple"))'.dependencies]
+rustix = { version = "1.1.4", features = ["fs"] }
+
+[dev-dependencies]
+zip = { version = "2", default-features = false, features = ["deflate"] }

@@ -1,4 +1,3 @@
-import { path } from "@tauri-apps/api";
 import { openPath } from "@tauri-apps/plugin-opener";
 import {
   ChevronDown,
@@ -9,7 +8,7 @@ import {
   FolderPlus,
   Pencil,
 } from "lucide-react";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import Button from "../components/Button";
 import Center from "../components/Center";
 import IconButton from "../components/IconButton";
@@ -20,11 +19,11 @@ import TabButton from "../components/TabButton";
 import type { MinecraftVersion } from "../core/download";
 import { AppContext } from "../store";
 import type { MinecraftInstance } from "../store/data";
-import { readDir } from "../utils/fs";
 import InstanceDownloaderView from "./InstanceDownloaderView";
 import InstanceEditorView from "./InstanceEditorView";
 import InstanceInstallerView from "./InstanceInstallerView";
 import InstanceModLoaderView from "./InstanceModLoaderView";
+import InstanceModsView from "./InstanceModsView";
 
 function shortenDirectory(directory: string): string {
   const sep = directory.includes("\\") ? "\\" : "/";
@@ -66,43 +65,6 @@ function InstanceGroup(props: {
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function InstanceModViewer(props: { instance: MinecraftInstance }) {
-  const current = props.instance;
-  const [modsPath, setModsPath] = useState<string>();
-  const [modList, setModList] = useState<string[]>([]);
-  const [selected, setSelected] = useState<string>();
-
-  useEffect(() => {
-    path.join(current.directory, "mods").then((modsPath) => {
-      setModsPath(modsPath);
-      readDir(modsPath).then((files) =>
-        setModList(files.map((f) => f.name).filter((n) => n.endsWith(".jar"))),
-      );
-    });
-  }, [current]);
-
-  return (
-    <div className="p-4 space-y-2">
-      <div className="flex space-x-2">
-        <Button onClick={() => modsPath && openPath(modsPath)}>
-          Reveal Mods Directory
-        </Button>
-      </div>
-      <div className="space-y-1">
-        {modList.map((mod) => (
-          <ListItem
-            checked={selected === mod}
-            key={mod}
-            onClick={() => setSelected(mod)}
-          >
-            {mod}
-          </ListItem>
-        ))}
-      </div>
     </div>
   );
 }
@@ -315,7 +277,7 @@ export default function InstancesView() {
                   id="instance-mods-panel"
                   role="tabpanel"
                 >
-                  <InstanceModViewer instance={current} />
+                  <InstanceModsView instance={current} key={current.id} />
                 </div>
               )}
             </div>

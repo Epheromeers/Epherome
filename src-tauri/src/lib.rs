@@ -3,6 +3,7 @@ mod utils;
 
 use core::auth::get_microsoft_auth_code;
 use core::java::{detect_java_runtimes, get_java_version};
+use core::mods::{import_local_mods, scan_local_mods, set_local_mod_enabled};
 use core::runner::launch_minecraft;
 use utils::fs::{
     check_files, exists, inspect_files, mkdir, read_dir, read_file, read_text_file, sha1_file,
@@ -21,6 +22,9 @@ pub fn run() {
             get_microsoft_auth_code,
             get_java_version,
             detect_java_runtimes,
+            scan_local_mods,
+            import_local_mods,
+            set_local_mod_enabled,
             read_text_file,
             write_text_file,
             read_file,
